@@ -37,6 +37,7 @@ import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FacebookAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -236,24 +237,7 @@ public class LoginActivity extends Activity
 	private void loginWithEmailAndPass (String email, String password)
 	{
 		// [START sign_in_with_email]
-		mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, task ->
-		{
-			if (task.isSuccessful())
-				// Sign in success, update UI with the signed-in user's information
-				updateUI();
-			else
-			{
-				// If sign in fails, display a message to the user.
-				Log.w(TAG, "signInWithEmail:failure", task.getException());
-				Toast.makeText(this, "Authentication failed.", Toast.LENGTH_SHORT).show();
-				if (Objects.requireNonNull(Objects.requireNonNull(task.getException()).getMessage()).equals("The password is invalid or the user does not have a password."))
-					Snackbar.make(emailPassLogin, "Wrong password", Snackbar.LENGTH_LONG)
-							.setAction("clear",view -> userPassword.setText(""))
-							.show();
-				emailPassLogin.setEnabled(true);
-				progressIndicator.setVisibility(View.GONE);
-			}
-		});
+		mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(this, this::handleTaskResult);
 		// [END sign_in_with_email]
 	}
 
@@ -288,34 +272,17 @@ public class LoginActivity extends Activity
 		});
 	}
 
-	private void handleFacebookAccessToken (AccessToken token)
-	{
-		Log.d(TAG, "handleFacebookAccessToken:" + token.getUserId());
-		AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
-
-		mAuth.signInWithCredential(credential).addOnCompleteListener(this, task ->
-		{
-			if (task.isSuccessful())
-				// Sign in success, update UI with the signed-in user's information
-				updateUI();
-			else
-			{
-				// If sign in fails, display a message to the user.
-				Log.w(TAG, "signInWithCredential:failure", task.getException());
-				progressIndicator.setVisibility(View.GONE);
-				Toast.makeText(this, "Authentication failed.", Toast.LENGTH_SHORT).show();
-			}
-		});
-	}
-
 	private void googleLogin ()
 	{
 		vibrate();
 		progressIndicator.setVisibility(View.VISIBLE);
 		// [START config_sign_in]
 		// Configure Google Sign In
-		GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN).requestIdToken(getString(R.string.idToken)).requestEmail().build();
-
+		GoogleSignInOptions gso = new GoogleSignInOptions
+				.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+				.requestIdToken(getString(R.string.idToken))
+				.requestEmail()
+				.build();
 		GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
 		// [END config_sign_in]
 
@@ -340,7 +307,6 @@ public class LoginActivity extends Activity
 				firebaseAuthWithGoogle(account.getIdToken());
 			}
 			catch (ApiException e)
-
 			{
 				// Google Sign In failed, update UI appropriately
 				progressIndicator.setVisibility(View.GONE);
@@ -352,21 +318,37 @@ public class LoginActivity extends Activity
 		Log.d(TAG, "onActivityResult: data = " + data.getExtras().toString());
 	}
 
+	private void handleFacebookAccessToken (AccessToken token)
+	{
+		Log.d(TAG, "handleFacebookAccessToken:" + token.getUserId());
+		AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+		mAuth.signInWithCredential(credential).addOnCompleteListener(this, this::handleTaskResult);
+	}
+
 	private void firebaseAuthWithGoogle (String idToken)
 	{
 		AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
-		mAuth.signInWithCredential(credential).addOnCompleteListener(this, task ->
+		mAuth.signInWithCredential(credential).addOnCompleteListener(this, this::handleTaskResult);
+	}
+
+	private void handleTaskResult (Task<AuthResult> task)
+	{
+		if (task.isSuccessful()) // Sign in success, update UI with the signed-in user's information
+			updateUI();
+		else
 		{
-			if (task.isSuccessful())
-				// Sign in success, update UI with the signed-in user's information
-				updateUI();
-			else
-			{
-				// If sign in fails, display a message to the user.
-				progressIndicator.setVisibility(View.GONE);
-				Log.w(TAG, "signInWithCredential:failure", task.getException());
-			}
-		});
+			// If sign in fails, display a message to the user.
+			Log.w(TAG, "handleTaskResult:failure", task.getException());
+			Toast.makeText(this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+			progressIndicator.setVisibility(View.GONE);
+			if (Objects.requireNonNull(Objects.requireNonNull(task.getException())
+					.getMessage())
+					.equals("The password is invalid or the user does not have a password."))
+				Snackbar.make(emailPassLogin, "Wrong password", Snackbar.LENGTH_LONG)
+						.setAction("clear",view -> userPassword.setText(""))
+						.show();
+			emailPassLogin.setEnabled(true);
+		}
 	}
 
 	private void updateUI ()
