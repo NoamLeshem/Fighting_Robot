@@ -1,0 +1,69 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:tint="#000000"
+    android:viewportWidth="108"
+
+    android:viewportHeight="108">
+    <group
+        android:scaleX="2.61"
+        android:scaleY="2.61"
+        android:translateX="22.68"
+        android:translateY="22.68">
+        <path
+            android:fillColor="#FF000000"
+            android:pathData="
+                M 22 14
+                H 21
+                C 21 10.13 17.87 7 14 7
+                H 13
+                V 5.73
+                C 13.6 5.39 14 4.74 14 4
+                C 14 2.9 13.11 2 12 2
+                S 10 2.9 10 4
+                C 10 4.74 10.4 5.39 11 5.73
+                V 7
+                H 10
+                C 6.13 7 3 10.13 3 14
+                H 2
+                C 1.45 14 1 14.45 1 15
+                V 18
+                C 1 18.55 1.45 19 2 19
+                H 3
+                V 20
+                C 3 21.11 3.9 22 5 22
+                H 19
+                C 20.11 22 21 21.11 21 20
+                V 19
+                H 22
+                C 22.55 19 23 18.55 23 18
+                V 15
+                C 23 14.45 22.55 14 22 14
+                M 21 17
+                H 19
+                V 20
+                H 5
+                V 17
+                H 3
+                V 16
+                H 5
+                V 14
+                C 5 11.24 7.24 9 10 9
+                H 14
+                C 16.76 9 19 11.24 19 14
+                V 16
+                H 21
+                V 17
+                M 17.5 15.5
+                C 17.5 16.61 16.61 17.5 15.5 17.5
+                C 14.53 17.5 13.73 16.81 13.54 15.9
+                L 16.5 13.78
+                C 17.1 14.13 17.5 14.76 17.5 15.5
+                M 7.5 13.78
+                L 10.46 15.9
+                C 10.28 16.81 9.47 17.5 8.5 17.5
+                C 7.4 17.5 6.5 16.61 6.5 15.5
+                C 6.5 14.76 6.9 14.13 7.5 13.78
+                Z " />
+    </group>
+</vector>

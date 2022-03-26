@@ -1,0 +1,46 @@
+<resources>
+    <string name="app_name">Fighting Robot</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="prompt_email">Email</string>
+    <string name="prompt_password">Password</string>
+    <string name="action_sign_in">Sign in or register</string>
+    <string name="action_sign_in_short">Sign in</string>
+    <string name="welcome">"Welcome !"</string>
+    <string name="invalid_username">Not a valid username</string>
+    <string name="invalid_email">Not a valid email</string>
+    <string name="invalid_password">Password must be according to the password format</string>
+    <string name="login_failed">"Login failed"</string>
+    <string name="try_again">Clear</string>
+    <string name="sign_out">sign out</string>
+    <string name="new_account">Don\'t have an account? Create a new one</string>
+    <string name="idToken">701093442847-ccfcnd36pa2cpdi2p969aqp3293d6ecc.apps.googleusercontent.com</string>
+    <string name="sign_in_with_google">SignIn with Google</string>
+    <string name="facebook_app_id">418368376337352</string>
+    <string name="fb_login_protocol_scheme">fb418368376337352</string>
+    <string name="example_mail">example@gmail.com</string>
+    <string name="show_password">show password</string>
+    <string name="password_rules">password rules</string>
+    <string name="password_rule">password must:\n
+                                \t\tbe at least 8 characters\n
+                                \t\tbe at most 20 characters\n
+                                \t\tinclude at least one digit[0-9]\n
+                                \t\tinclude at least one lowercase letter[a-z]\n
+                                \t\tinclude at least one uppercase letter[A-Z]\n
+                                \t\tinclude at least one of the special character below:\n\t\t</string>
+    <string name="sign_in">Already have an account? Sign in</string>
+    <string name="sign_up">sign up</string>
+    <string name="settings">Settings</string>
+    <string name="history">History</string>
+    <string name="fight">Fight</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="auto_mode">automatic mode - magic</string>
+    <string name="firebase">firebase - manual mode</string>
+    <string name="connect_using">Connect to the robot using:</string>
+    <string name="continue_with_google">continue with google</string>
+    <string name="appearance">\t\tAppearance</string>
+    <string name="primary_color">Primary Color</string>
+    <string name="background_color">Background color</string>
+    <string name="shoot">shoot</string>
+    <string name="behavior">\t\tBehavior</string>
+</resources>

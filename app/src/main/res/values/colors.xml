@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="red_600">#E53935</color>
+    <color name="red_700">#D32F2F</color>
+    <color name="red_800">#C62828</color>
+    <color name="teal_200">#80cbc4</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="teal_900">#FF00574B</color>
+
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="light_blue">#40c4ff</color>
+    <color name="dark_blue">#1A237E</color>
+    <color name="light_green">#69F0AE</color>
+    <color name="dark_green">#1B5E20</color>
+    <color name="light_red">#FF5252</color>
+    <color name="dark_red">#B71C1C</color>
+    <color name="light_yellow">#FFFF00</color>
+    <color name="dark_yellow">#827717</color>
+    <color name="light_orange">#FF6E40</color>
+    <color name="dark_orange">#BF360C</color>
+    <color name="light_purple">#E040FB</color>
+    <color name="dark_purple">#4A148C</color>
+    <color name="red">#D50000</color>
+    <color name="google_blue">#4285F4</color>
+    <color name="google_green">#34a853</color>
+    <color name="google_yellow">#fbbc05</color>
+    <color name="google_red">#ea4335</color>
+    <color name="light_gray">#505050</color>
+    <color name="md_red_500">#F44336</color>
+    <color name="md_red_700">#D32F2F</color>
+    <color name="md_green_500">#4CAF50</color>
+    <color name="md_green_700">#388E3C</color>
+    <color name="md_yellow_500">#FFC107</color>
+    <color name="md_yellow_700">#FFA000</color>
+    <color name="md_blue_500">#03A9F4</color>
+    <color name="md_blue_700">#1976D2</color>
+
+</resources>
