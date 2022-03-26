@@ -91,6 +91,8 @@ public class SettingsFragment extends Fragment
 		final Button signOutButton = rootView.findViewById(R.id.sign_out);
 		final Button primaryColorButton = rootView.findViewById(R.id.color_chooser);
 		final Button bgChooseButton = rootView.findViewById(R.id.bg_chooser);
+		final Button languageButton = rootView.findViewById(R.id.language_chooser); // TODO: Add language chooser
+		final Button clearButton = rootView.findViewById(R.id.clear_data_button);
 		final SwitchMaterial vibrationSwitch = rootView.findViewById(R.id.vibe_chooser);
 
 		int backgroundColor = sharedPreferences.getInt(KEY_BACKGROUND, R.color.black);
@@ -108,13 +110,28 @@ public class SettingsFragment extends Fragment
 			editor.apply();
 		});
 
+		clearButton.setOnClickListener(this::clearData);
 		primaryColorButton.setOnClickListener(this::choosePrimaryColor);
-
 		bgChooseButton.setOnClickListener(this::chooseBackgroundColor);
-
 		signOutButton.setOnClickListener(this::logoutVerify);
-
 		return rootView;
+	}
+
+	private void clearData (View view)
+	{
+		vibrate();
+		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(view.getContext());
+		builder.setTitle("Change Background Color")
+				.setMessage("Are you sure you want to clear all data?")
+				.setPositiveButton("ok", (dialogInterface, i) ->
+				{
+					vibrate();
+					sharedPreferences.edit().clear().apply();
+				})
+				.setIcon(R.drawable.ic_palette)
+				.setCancelable(true)
+				.create()
+				.show();
 	}
 
 	private void vibrate ()

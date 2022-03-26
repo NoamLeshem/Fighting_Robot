@@ -45,4 +45,11 @@
     <string name="behavior">\t\tBehavior</string>
     <string name="other_settings">\t\tOther Settings</string>
     <string name="danger_zone">\t\tDanger Zone</string>
+    <string name="clear">clear</string>
+    <string name="clear_all_data">clear all data</string>
+    <string name="choose_language">choose language</string>
+    <string name="language">Language</string>
+    <string name="haptic_feedback">Haptic Feedback</string>
+    <string name="background">background</string>
+    <string name="color">color</string>
 </resources>
