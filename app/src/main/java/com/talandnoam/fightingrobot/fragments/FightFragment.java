@@ -94,13 +94,13 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 		final View rootView = inflater.inflate(R.layout.fragment_fight, container, false);
 
 		mAuth = FirebaseAuth.getInstance();
+		vibe = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
 
 		int backgroundColor = sharedPreferences.getInt(KEY_BACKGROUND, R.color.black);
 		rootView.setBackgroundColor(getResources().getColor(backgroundColor, null));
 		final Button autoButton = rootView.findViewById(R.id.auto_mode_button);
 		final Button firebaseButton = rootView.findViewById(R.id.firebaseButton);
 
-		vibe = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
 
 		autoButton.setOnClickListener(view ->
 				{

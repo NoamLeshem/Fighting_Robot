@@ -43,4 +43,6 @@
     <string name="background_color">Background color</string>
     <string name="shoot">shoot</string>
     <string name="behavior">\t\tBehavior</string>
+    <string name="other_settings">\t\tOther Settings</string>
+    <string name="danger_zone">\t\tDanger Zone</string>
 </resources>

@@ -95,14 +95,7 @@ public class HistoryFragment extends Fragment
 		 * Sets up a SwipeRefreshLayout.OnRefreshListener that is invoked when the user
 		 * performs a swipe-to-refresh gesture.
 		 */
-		mySwipeRefreshLayout.setOnRefreshListener(() ->
-		{
-			Log.i(TAG, "onRefresh called from SwipeRefreshLayout");
-
-			// This method performs the actual data-refresh operation.
-			// The method calls setRefreshing(false) when it's finished.
-			myUpdateOperation();
-		});
+		mySwipeRefreshLayout.setOnRefreshListener(this::myUpdateOperation);
 
 		int backgroundColor = sharedPreferences.getInt(KEY_BACKGROUND, R.color.black);
 		rootView.setBackgroundColor(getResources().getColor(backgroundColor, null));
@@ -139,6 +132,8 @@ public class HistoryFragment extends Fragment
 
 	private void myUpdateOperation ()
 	{
+		// This method performs the actual data-refresh operation.
+		// The method calls setRefreshing(false) when it's finished.
 		// Do an update
 		Log.i(TAG, "Performing update");
 		mySwipeRefreshLayout.setRefreshing(false);
