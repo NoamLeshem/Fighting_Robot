@@ -202,15 +202,15 @@ public class LoginActivity extends Activity
 			regex = "^[\\w!#$%&'*+/=?`{|}~^-]+(?:\\.[\\w!#$%&'*+/=?`{|}~^-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,6}$";
 		else
 			/*
-            ^                                   # start of line
-            (?=.*[0-9])                         # positive lookahead, digit [0-9]
-            (?=.*[a-z])                         # positive lookahead, one lowercase character [a-z]
-            (?=.*[A-Z])                         # positive lookahead, one uppercase character [A-Z]
-            (?=.*[!@#&()–[{}]:;',?/*~$^+=<>])   # positive lookahead, one of the special character in this [..]
-            .                                   # matches anything
-            {8,20}                              # length at least 8 characters and maximum of 20 characters
-            $                                   # end of line
-            */
+			^                                   # start of line
+			(?=.*[0-9])                         # positive lookahead, digit [0-9]
+			(?=.*[a-z])                         # positive lookahead, one lowercase character [a-z]
+			(?=.*[A-Z])                         # positive lookahead, one uppercase character [A-Z]
+			(?=.*[!@#&()–[{}]:;',?/*~$^+=<>])   # positive lookahead, one of the special character in this [..]
+			.                                   # matches anything
+			{8,20}                              # length at least 8 characters and maximum of 20 characters
+			$                                   # end of line
+			*/
 			regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–[{}]:;',?/*~$^+=<>]).{8,20}$";
 		Pattern pattern = Pattern.compile(regex);
 		Matcher matcher = pattern.matcher(text);
