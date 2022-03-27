@@ -121,13 +121,14 @@ public class SettingsFragment extends Fragment
 	{
 		vibrate();
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(view.getContext());
-		builder.setTitle("Change Background Color")
+		builder.setTitle("Clear Data")
 				.setMessage("Are you sure you want to clear all data?")
 				.setPositiveButton("ok", (dialogInterface, i) ->
 				{
 					vibrate();
 					sharedPreferences.edit().clear().apply();
 				})
+				.setNegativeButton("cancel", (dialogInterface, i) ->{})
 				.setIcon(R.drawable.ic_palette)
 				.setCancelable(true)
 				.create()
