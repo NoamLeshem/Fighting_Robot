@@ -119,12 +119,12 @@ public class LoginActivity extends Activity
 			{ validateEmailOrPassword(passwordInputLayout, text, R.string.invalid_password, false); }
 		});
 
-		helpPassword.setOnClickListener(this::showPasswordRules);
-		showPassword.setOnCheckedChangeListener((compoundButton, isChecked) -> changePasswordState(isChecked));
-		emailPassLogin.setOnClickListener(view -> login());
-		googleButton.setOnClickListener(view -> googleLogin());
-		loginWithFacebook.setOnClickListener(view -> facebookLogin());
 		toSignUpActivity.setOnClickListener(view -> activityLauncher(new Intent(this, SignUpActivity.class)));
+		showPassword.setOnCheckedChangeListener((compoundButton, isChecked) -> changePasswordState(isChecked));
+		loginWithFacebook.setOnClickListener(view -> facebookLogin());
+		helpPassword.setOnClickListener(this::showPasswordRules);
+		googleButton.setOnClickListener(view -> googleLogin());
+		emailPassLogin.setOnClickListener(view -> login());
 	}
 
 	private void vibrate ()

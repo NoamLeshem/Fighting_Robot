@@ -42,12 +42,9 @@ public class MainActivity extends AppCompatActivity
 
 		initializeVariables();
 		handleSharedPreferences();
-
-		// initializing the fragment
-		initializeFragment();
+		initializeFragment(); // initializing the fragment
 
 		navigationView.setOnItemSelectedListener(item -> handleItemSelected(item.getItemId()));
-
 		fragmentManager.setFragmentResultListener(
 				"requestKey", this, (requestKey, result) ->
 		{
@@ -59,11 +56,11 @@ public class MainActivity extends AppCompatActivity
 	private void initializeVariables ()
 	{
 		sharedPreferences = this.getSharedPreferences(TAG, Context.MODE_PRIVATE);
-		vibe = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
 		vibrationState = sharedPreferences.getBoolean(KEY_VIBRATION, true);
+		vibe = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
+		navigationView = findViewById(R.id.bottom_navigation);
 		fragmentManager = getSupportFragmentManager();
 		actionBar = getSupportActionBar();
-		navigationView = findViewById(R.id.bottom_navigation);
 	}
 
 	private void initializeFragment ()
@@ -80,7 +77,7 @@ public class MainActivity extends AppCompatActivity
 		int fragmentId = sharedPreferences.getInt(KEY_FRAGMENT, R.id.fight);
 		handleItemSelected(fragmentId);
 		int themeId = sharedPreferences.getInt(KEY_THEME, R.style.ThemeFightingRobot);
-		this.setTheme(themeId); // this.getResources().getIdentifier("T_" + stringColor, "style", this.getPackageName()));
+		this.setTheme(themeId);
 	}
 
 	private void vibrate ()

@@ -13,13 +13,13 @@ public class Match
 
 	public Match(String matchId, String matchWinner, String matchDate, String matchTime, String matchType, String matchFormat, String matchResult)
 	{
-		this.setMatchId(matchId);
 		this.setMatchWinner(matchWinner);
+		this.setMatchFormat(matchFormat);
+		this.setMatchResult(matchResult);
 		this.setMatchDate(matchDate);
 		this.setMatchTime(matchTime);
 		this.setMatchType(matchType);
-		this.setMatchFormat(matchFormat);
-		this.setMatchResult(matchResult);
+		this.setMatchId(matchId);
 	}
 
 	public String getMatchId()
