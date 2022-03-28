@@ -177,8 +177,11 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 
 	private void startFight (String type, String length, String format)
 	{
-		DatabaseReference myRef1 = FirebaseDatabase.getInstance().getReference("users/" + mAuth.getUid() + "/match_history");
+		FirebaseDatabase database = FirebaseDatabase.getInstance();
+		DatabaseReference myRef1 = database.getReference("users/" + mAuth.getUid() + "/match_history");
 		DatabaseReference myRef2 = myRef1.push();
+		DatabaseReference myRef3 = database.getReference("processor/currentMatch");
+		myRef3.setValue(myRef2.getKey());
 		LocalDateTime myDateObj = LocalDateTime.now();
 		DateTimeFormatter myFormatDateObj = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 		DateTimeFormatter myFormatTimeObj = DateTimeFormatter.ofPattern("HH:mm:ss");
@@ -191,7 +194,12 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 				formattedTime,
 				type,
 				format + " " + length,
-				"0-0"));
-		startActivity(new Intent(getApplicationContext(), FightActivity.class));
+				"0-0",
+				length));
+		Intent intent = new Intent(getContext(), FightActivity.class);
+		intent.putExtra("matchID", myRef2.getKey());
+		intent.putExtra("matchFormat", type + " " + format + " " + length);
+		intent.putExtra("userID", mAuth.getUid());
+		startActivity(intent);
 	}
 }

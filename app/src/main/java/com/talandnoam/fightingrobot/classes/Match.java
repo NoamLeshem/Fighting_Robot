@@ -4,15 +4,16 @@ import androidx.annotation.NonNull;
 
 public class Match
 {
-	private String matchId, matchWinner, matchDate, matchTime, matchType, matchFormat, matchResult;
+	private String matchId, matchWinner, matchDate, matchTime, matchType, matchFormat, matchResult, matchRoundsCap;
 
 	public Match()
 	{
 		// TODO Auto-generated constructor stub
 	}
 
-	public Match(String matchId, String matchWinner, String matchDate, String matchTime, String matchType, String matchFormat, String matchResult)
+	public Match(String matchId, String matchWinner, String matchDate, String matchTime, String matchType, String matchFormat, String matchResult, String matchRoundsCap)
 	{
+		this.setMatchRoundsCap(matchRoundsCap);
 		this.setMatchWinner(matchWinner);
 		this.setMatchFormat(matchFormat);
 		this.setMatchResult(matchResult);
@@ -20,6 +21,16 @@ public class Match
 		this.setMatchTime(matchTime);
 		this.setMatchType(matchType);
 		this.setMatchId(matchId);
+	}
+
+	public String getMatchRoundsCap()
+	{
+		return matchRoundsCap;
+	}
+
+	private void setMatchRoundsCap (String matchRoundsCap)
+	{
+		this.matchRoundsCap = matchRoundsCap;
 	}
 
 	public String getMatchId()
@@ -101,6 +112,7 @@ public class Match
 				"Time: " + matchTime + "\n" +
 				"Type: " + matchType + "\n" +
 				"Format: " + matchFormat + "\n" +
-				"Result: " + matchResult;
+				"Result: " + matchResult + "\n" +
+				"Rounds Cap: " + matchRoundsCap;
 	}
 }
