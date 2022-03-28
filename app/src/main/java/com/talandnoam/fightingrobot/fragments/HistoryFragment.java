@@ -118,10 +118,7 @@ public class HistoryFragment extends Fragment
 			public void onDataChange (@NonNull DataSnapshot snapshot)
 			{
 				for (DataSnapshot matchSnapshot : snapshot.getChildren())
-				{
-					Match match = matchSnapshot.getValue(Match.class);
-					allMatchesList.add(match);
-				}
+					allMatchesList.add(matchSnapshot.getValue(Match.class));
 			}
 
 			@Override

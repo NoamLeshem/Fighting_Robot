@@ -1,417 +1,429 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+<androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/swipe_refresh_layout"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     tools:context=".fragments.SettingsFragment">
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/appearance"
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/activity_horizontal_margin"
-        app:cardCornerRadius="@dimen/cornerRadius"
-        app:cardElevation="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:layout_height="wrap_content">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/activity_horizontal_margin">
+            android:layout_height="wrap_content">
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_palette"
-                android:text="@string/appearance"
-                android:textColor="?attr/colorPrimary"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <View
-                android:id="@+id/separator1"
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/appearance"
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginHorizontal="24dp"
-                android:layout_marginVertical="10dp"
-                android:background="@color/light_gray"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/label" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/primary_color"
-                android:textSize="20sp"
-                app:layout_constraintBottom_toTopOf="@id/separator3"
-                app:layout_constraintEnd_toStartOf="@id/separator2"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/separator1" />
-
-            <View
-                android:id="@+id/separator2"
-                android:layout_width="1dp"
-                android:layout_height="40dp"
-                android:background="@color/light_gray"
-                app:layout_constraintBottom_toTopOf="@id/separator3"
-                app:layout_constraintEnd_toStartOf="@id/color_chooser"
-                app:layout_constraintStart_toEndOf="@id/text"
-                app:layout_constraintTop_toBottomOf="@id/separator1" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/color_chooser"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:hapticFeedbackEnabled="true"
-                android:text="@string/color"
-                app:cornerRadius="@dimen/cornerRadius"
-                app:elevation="10dp"
-                app:layout_constraintBottom_toTopOf="@id/separator3"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/separator2"
-                app:layout_constraintTop_toBottomOf="@id/separator1" />
-
-            <View
-                android:id="@+id/separator3"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginHorizontal="24dp"
-                android:background="@color/light_gray"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/color_chooser" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/text1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/background_color"
-                android:textSize="20sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/separator4"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/separator3" />
-
-            <View
-                android:id="@+id/separator4"
-                android:layout_width="1dp"
-                android:layout_height="40dp"
-                android:background="@color/light_gray"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/bg_chooser"
-                app:layout_constraintStart_toEndOf="@id/text1"
-                app:layout_constraintTop_toBottomOf="@id/separator3" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/bg_chooser"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:hapticFeedbackEnabled="true"
-                android:text="@string/background"
-                app:cornerRadius="@dimen/cornerRadius"
-                app:elevation="10dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/separator4"
-                app:layout_constraintTop_toBottomOf="@+id/color_chooser" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </com.google.android.material.card.MaterialCardView>
-
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/behavior_card"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/activity_horizontal_margin"
-        app:cardCornerRadius="@dimen/cornerRadius"
-        app:cardElevation="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/appearance">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/activity_horizontal_margin"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/behavior"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_palette"
-                android:text="@string/behavior"
-                android:textColor="?attr/colorPrimary"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <View
-                android:id="@+id/separator6"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginHorizontal="24dp"
-                android:layout_marginVertical="10dp"
-                android:background="@color/light_gray"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/behavior" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/text2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/haptic_feedback"
-                android:layout_marginStart="@dimen/activity_horizontal_margin"
-                android:textSize="20sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/separator6" />
-
-            <View
-                android:id="@+id/separator5"
-                android:layout_width="1dp"
-                android:layout_height="40dp"
-                android:background="@color/light_gray"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/vibe_chooser"
-                app:layout_constraintStart_toEndOf="@id/text2"
-                app:layout_constraintTop_toBottomOf="@+id/separator6" />
-
-            <com.google.android.material.switchmaterial.SwitchMaterial
-                android:id="@+id/vibe_chooser"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:hapticFeedbackEnabled="true"
-                app:cornerRadius="@dimen/cornerRadius"
-                app:elevation="10dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/separator5"
-                app:layout_constraintTop_toBottomOf="@+id/separator6"
-                app:thumbTint="?colorPrimary" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </com.google.android.material.card.MaterialCardView>
-
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/other_settings_card"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/activity_horizontal_margin"
-        app:cardCornerRadius="@dimen/cornerRadius"
-        app:cardElevation="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/behavior_card">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/activity_horizontal_margin"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/text3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_palette"
-                android:text="@string/other_settings"
-                android:textColor="?attr/colorPrimary"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <View
-                android:id="@+id/separator7"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginHorizontal="24dp"
-                android:layout_marginVertical="10dp"
-                android:background="@color/light_gray"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/text3" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/text5"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/activity_horizontal_margin"
-                android:layout_marginBottom="5dp"
-                android:text="@string/language"
-                android:textSize="20sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/separator7" />
-
-            <View
-                android:id="@+id/separator8"
-                android:layout_width="1dp"
-                android:layout_height="40dp"
-                android:background="@color/light_gray"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/language_chooser"
-                app:layout_constraintStart_toEndOf="@id/text5"
-                app:layout_constraintTop_toBottomOf="@+id/separator7" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/language_chooser"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:hapticFeedbackEnabled="true"
-                android:text="@string/choose_language"
-                app:cornerRadius="@dimen/cornerRadius"
-                app:elevation="10dp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                app:cardCornerRadius="@dimen/cornerRadius"
+                app:cardElevation="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/separator8"
-                app:layout_constraintTop_toBottomOf="@+id/separator7" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-            <!--View
-                android:id="@+id/separator9"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/activity_horizontal_margin">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableStart="@drawable/ic_palette"
+                        android:text="@string/appearance"
+                        android:textColor="?attr/colorPrimary"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <View
+                        android:id="@+id/separator1"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginHorizontal="24dp"
+                        android:layout_marginVertical="10dp"
+                        android:background="@color/light_gray"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/label" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/primary_color"
+                        android:textSize="20sp"
+                        app:layout_constraintBottom_toTopOf="@id/separator3"
+                        app:layout_constraintEnd_toStartOf="@id/separator2"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/separator1" />
+
+                    <View
+                        android:id="@+id/separator2"
+                        android:layout_width="1dp"
+                        android:layout_height="40dp"
+                        android:background="@color/light_gray"
+                        app:layout_constraintBottom_toTopOf="@id/separator3"
+                        app:layout_constraintEnd_toStartOf="@id/color_chooser"
+                        app:layout_constraintStart_toEndOf="@id/text"
+                        app:layout_constraintTop_toBottomOf="@id/separator1" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/color_chooser"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:hapticFeedbackEnabled="true"
+                        android:text="@string/color"
+                        app:cornerRadius="@dimen/cornerRadius"
+                        app:elevation="10dp"
+                        app:layout_constraintBottom_toTopOf="@id/separator3"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/separator2"
+                        app:layout_constraintTop_toBottomOf="@id/separator1" />
+
+                    <View
+                        android:id="@+id/separator3"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginHorizontal="24dp"
+                        android:background="@color/light_gray"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/color_chooser" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/text1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/background_color"
+                        android:textSize="20sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/separator4"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/separator3" />
+
+                    <View
+                        android:id="@+id/separator4"
+                        android:layout_width="1dp"
+                        android:layout_height="40dp"
+                        android:background="@color/light_gray"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/bg_chooser"
+                        app:layout_constraintStart_toEndOf="@id/text1"
+                        app:layout_constraintTop_toBottomOf="@id/separator3" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/bg_chooser"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:hapticFeedbackEnabled="true"
+                        android:text="@string/background"
+                        app:cornerRadius="@dimen/cornerRadius"
+                        app:elevation="10dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/separator4"
+                        app:layout_constraintTop_toBottomOf="@+id/color_chooser" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/behavior_card"
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginHorizontal="24dp"
-                android:layout_marginVertical="10dp"
-                android:background="@color/light_gray"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/separator8" /-->
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </com.google.android.material.card.MaterialCardView>
-
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/danger_zone"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/activity_horizontal_margin"
-        app:cardCornerRadius="@dimen/cornerRadius"
-        app:cardElevation="10dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/other_settings_card">
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="@dimen/activity_horizontal_margin">
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/danger_zone_text"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawableStart="@drawable/ic_palette"
-                android:text="@string/danger_zone"
-                android:textColor="?attr/colorPrimary"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <View
-                android:id="@+id/separator10"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginHorizontal="24dp"
-                android:layout_marginVertical="10dp"
-                android:background="@color/light_gray"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/danger_zone_text" />
-
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/clear_data_text"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/clear_all_data"
-                android:textSize="20sp"
                 android:layout_margin="@dimen/activity_horizontal_margin"
-                app:layout_constraintBottom_toTopOf="@id/separator12"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/separator10" />
-
-            <View
-                android:id="@+id/separator11"
-                android:layout_width="1dp"
-                android:layout_height="40dp"
-                android:background="@color/light_gray"
-                app:layout_constraintBottom_toTopOf="@id/separator12"
-                app:layout_constraintEnd_toStartOf="@id/clear_data_button"
-                app:layout_constraintStart_toEndOf="@id/clear_data_text"
-                app:layout_constraintTop_toBottomOf="@id/separator10" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/clear_data_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:hapticFeedbackEnabled="true"
-                android:text="@string/clear"
-                app:cornerRadius="@dimen/cornerRadius"
-                app:elevation="10dp"
-                app:layout_constraintBottom_toTopOf="@id/separator12"
+                app:cardCornerRadius="@dimen/cornerRadius"
+                app:cardElevation="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/separator11"
-                app:layout_constraintTop_toBottomOf="@id/separator10" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/appearance">
 
-            <View
-                android:id="@+id/separator12"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/activity_horizontal_margin"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/behavior"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableStart="@drawable/ic_palette"
+                        android:text="@string/behavior"
+                        android:textColor="?attr/colorPrimary"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <View
+                        android:id="@+id/separator6"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginHorizontal="24dp"
+                        android:layout_marginVertical="10dp"
+                        android:background="@color/light_gray"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/behavior" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/text2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/activity_horizontal_margin"
+                        android:text="@string/haptic_feedback"
+                        android:textSize="20sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/separator6" />
+
+                    <View
+                        android:id="@+id/separator5"
+                        android:layout_width="1dp"
+                        android:layout_height="40dp"
+                        android:background="@color/light_gray"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/vibe_chooser"
+                        app:layout_constraintStart_toEndOf="@id/text2"
+                        app:layout_constraintTop_toBottomOf="@+id/separator6" />
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/vibe_chooser"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:hapticFeedbackEnabled="true"
+                        app:cornerRadius="@dimen/cornerRadius"
+                        app:elevation="10dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/separator5"
+                        app:layout_constraintTop_toBottomOf="@+id/separator6"
+                        app:thumbTint="?colorPrimary" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/other_settings_card"
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginHorizontal="24dp"
-                android:background="@color/light_gray"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/activity_horizontal_margin"
+                app:cardCornerRadius="@dimen/cornerRadius"
+                app:cardElevation="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/clear_data_button" />
+                app:layout_constraintTop_toBottomOf="@id/behavior_card">
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/sign_out_text"
-                android:layout_width="wrap_content"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/activity_horizontal_margin"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/text3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableStart="@drawable/ic_palette"
+                        android:text="@string/other_settings"
+                        android:textColor="?attr/colorPrimary"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <View
+                        android:id="@+id/separator7"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginHorizontal="24dp"
+                        android:layout_marginVertical="10dp"
+                        android:background="@color/light_gray"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/text3" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/text5"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/activity_horizontal_margin"
+                        android:layout_marginBottom="5dp"
+                        android:text="@string/language"
+                        android:textSize="20sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/separator7" />
+
+                    <View
+                        android:id="@+id/separator8"
+                        android:layout_width="1dp"
+                        android:layout_height="40dp"
+                        android:background="@color/light_gray"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/language_chooser"
+                        app:layout_constraintStart_toEndOf="@id/text5"
+                        app:layout_constraintTop_toBottomOf="@+id/separator7" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/language_chooser"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:hapticFeedbackEnabled="true"
+                        android:text="@string/choose_language"
+                        app:cornerRadius="@dimen/cornerRadius"
+                        app:elevation="10dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/separator8"
+                        app:layout_constraintTop_toBottomOf="@+id/separator7" />
+
+                    <!--View
+                        android:id="@+id/separator9"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginHorizontal="24dp"
+                        android:layout_marginVertical="10dp"
+                        android:background="@color/light_gray"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/separator8" /-->
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/danger_zone"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/sign_out"
-                android:textSize="20sp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/separator13"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/separator12" />
-
-            <View
-                android:id="@+id/separator13"
-                android:layout_width="1dp"
-                android:layout_height="40dp"
-                android:background="@color/light_gray"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@id/sign_out"
-                app:layout_constraintStart_toEndOf="@id/sign_out_text"
-                app:layout_constraintTop_toBottomOf="@id/separator12" />
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/sign_out"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:hapticFeedbackEnabled="true"
-                android:text="@string/sign_out"
-                app:cornerRadius="@dimen/cornerRadius"
-                app:elevation="10dp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_margin="@dimen/activity_horizontal_margin"
+                app:cardCornerRadius="@dimen/cornerRadius"
+                app:cardElevation="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@id/separator13"
-                app:layout_constraintTop_toBottomOf="@+id/clear_data_button" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/other_settings_card">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/activity_horizontal_margin">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/danger_zone_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:drawableStart="@drawable/ic_palette"
+                        android:text="@string/danger_zone"
+                        android:textColor="?attr/colorPrimary"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <View
+                        android:id="@+id/separator10"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginHorizontal="24dp"
+                        android:layout_marginVertical="10dp"
+                        android:background="@color/light_gray"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/danger_zone_text" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/clear_data_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/activity_horizontal_margin"
+                        android:text="@string/clear_all_data"
+                        android:textSize="20sp"
+                        app:layout_constraintBottom_toTopOf="@id/separator12"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/separator10" />
+
+                    <View
+                        android:id="@+id/separator11"
+                        android:layout_width="1dp"
+                        android:layout_height="40dp"
+                        android:background="@color/light_gray"
+                        app:layout_constraintBottom_toTopOf="@id/separator12"
+                        app:layout_constraintEnd_toStartOf="@id/clear_data_button"
+                        app:layout_constraintStart_toEndOf="@id/clear_data_text"
+                        app:layout_constraintTop_toBottomOf="@id/separator10" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/clear_data_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:hapticFeedbackEnabled="true"
+                        android:text="@string/clear"
+                        app:cornerRadius="@dimen/cornerRadius"
+                        app:elevation="10dp"
+                        app:layout_constraintBottom_toTopOf="@id/separator12"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/separator11"
+                        app:layout_constraintTop_toBottomOf="@id/separator10" />
+
+                    <View
+                        android:id="@+id/separator12"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginHorizontal="24dp"
+                        android:background="@color/light_gray"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/clear_data_button" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/sign_out_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/sign_out"
+                        android:textSize="20sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/separator13"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/separator12" />
+
+                    <View
+                        android:id="@+id/separator13"
+                        android:layout_width="1dp"
+                        android:layout_height="40dp"
+                        android:background="@color/light_gray"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@id/sign_out"
+                        app:layout_constraintStart_toEndOf="@id/sign_out_text"
+                        app:layout_constraintTop_toBottomOf="@id/separator12" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/sign_out"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:hapticFeedbackEnabled="true"
+                        android:text="@string/sign_out"
+                        app:cornerRadius="@dimen/cornerRadius"
+                        app:elevation="10dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@id/separator13"
+                        app:layout_constraintTop_toBottomOf="@+id/clear_data_button" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.card.MaterialCardView>
         </androidx.constraintlayout.widget.ConstraintLayout>
-    </com.google.android.material.card.MaterialCardView>
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

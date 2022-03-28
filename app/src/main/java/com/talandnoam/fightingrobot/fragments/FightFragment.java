@@ -11,7 +11,9 @@ import android.os.Vibrator;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 
 import androidx.fragment.app.Fragment;
 
@@ -35,7 +37,8 @@ import java.time.format.DateTimeFormatter;
  */
 public class FightFragment extends Fragment // implements IOnBackPressed
 {
-	private static final SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("MainActivity", Context.MODE_PRIVATE);
+	private static final SharedPreferences sharedPreferences = getApplicationContext()
+			.getSharedPreferences("MainActivity", Context.MODE_PRIVATE);
 	private static final String KEY_BACKGROUND = "background", KEY_VIBRATION = "vibration";
 
 	// TODO: Rename parameter arguments, choose names that match
@@ -88,10 +91,12 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 	}
 
 	@Override
-	public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+	public View onCreateView (LayoutInflater inflater, ViewGroup container,
+	                          Bundle savedInstanceState)
 	{
 		// Inflate the layout for this fragment
-		final View rootView = inflater.inflate(R.layout.fragment_fight, container, false);
+		final View rootView = inflater.inflate(R.layout.fragment_fight, container,
+				false);
 
 		mAuth = FirebaseAuth.getInstance();
 		vibe = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
@@ -101,35 +106,76 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 		final Button autoButton = rootView.findViewById(R.id.auto_mode_button);
 		final Button firebaseButton = rootView.findViewById(R.id.firebaseButton);
 
-
 		autoButton.setOnClickListener(view ->
 				{
-					boolean vibration = sharedPreferences.getBoolean(KEY_VIBRATION, false);
-					if (vibration)
-						vibe.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE));
-					Snackbar.make(rootView,"autoModeActivityLauncher", BaseTransientBottomBar.LENGTH_SHORT).setAnchorView(R.id.bottom_navigation).show();
+					vibrate();
+					Snackbar.make(rootView,"autoModeActivityLauncher",
+							BaseTransientBottomBar.LENGTH_SHORT)
+							.setAnchorView(R.id.bottom_navigation)
+							.show();
 				});
-		firebaseButton.setOnClickListener(this::materialAlertDialogBuilder);
+		firebaseButton.setOnClickListener(view -> chooseFightingRules(view, container));
 		return rootView;
 	}
 
-	private void materialAlertDialogBuilder (View view)
+	/**
+	 * setting the adapters for each of the spinners.
+	 */
+	private void getSpinnerAdapter (Spinner matchType, Spinner matchLength, Spinner matchFormat)
 	{
+		// Create an ArrayAdapter using the string array and a default spinner layout
+		ArrayAdapter<CharSequence> matchTypeAdapter = ArrayAdapter.createFromResource(getContext(), R.array.match_type, android.R.layout.simple_spinner_item);
+		ArrayAdapter<CharSequence> matchLengthAdapter = ArrayAdapter.createFromResource(getContext(), R.array.match_length, android.R.layout.simple_spinner_item);
+		ArrayAdapter<CharSequence> matchFormatAdapter = ArrayAdapter.createFromResource(getContext(), R.array.match_format, android.R.layout.simple_spinner_item);
 
-		if (sharedPreferences.getBoolean(KEY_VIBRATION, false))
-			vibe.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE));
-		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(view.getContext());
-		builder.setTitle("Tilt your phone")
-				.setMessage("The next screen is sideways (horizontal), please turn your phone for proper use.")
-				.setPositiveButton("ok", (dialogInterface, i) -> startFight())
-				.setNegativeButton("cancel",(dialogInterface, i) -> vibe.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE)))
-				.setIcon(R.drawable.ic_screen_rotation)
-				.setCancelable(true)
-				.create()
-				.show();
+		// Specify the layout to use when the list of choices appears
+		matchTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		matchLengthAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		matchFormatAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+		// Apply the adapter to the spinner
+		matchType.setAdapter(matchTypeAdapter);
+		matchLength.setAdapter(matchLengthAdapter);
+		matchFormat.setAdapter(matchFormatAdapter);
 	}
 
-	private void startFight ()
+
+	private void vibrate ()
+	{
+		if (sharedPreferences.getBoolean(KEY_VIBRATION, false))
+			vibe.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE));
+	}
+
+	private void chooseFightingRules (View view, ViewGroup container)
+	{
+		final View rootView = getLayoutInflater().inflate(R.layout.fight_chooser, container, false);
+		final Spinner matchType = rootView.findViewById(R.id.match_type_spinner);
+		final Spinner matchLength = rootView.findViewById(R.id.match_length_spinner);
+		final Spinner matchFormat = rootView.findViewById(R.id.match_format_spinner);
+		final Button fightButton = rootView.findViewById(R.id.start_button);
+		getSpinnerAdapter(matchType, matchLength, matchFormat);
+		vibrate();
+		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(view.getContext());
+		builder.setTitle("Preparing the fight")
+				.setView(rootView)
+				.setCancelable(true)
+				.setNeutralButton("Cancel", (dialog, which) -> vibrate())
+				.create()
+				.show();
+		fightButton.setOnClickListener(view1 ->
+		{
+			String type = matchType.getSelectedItem().toString().trim();
+			String length = matchLength.getSelectedItem().toString().trim();
+			String format = matchFormat.getSelectedItem().toString().trim();
+			if (!type.equals("match type") && !length.equals("match format") &&
+					!format.equals("match length"))
+				startFight(type, length, format);
+			else
+				Snackbar.make(view1,"Please fill all the fields", BaseTransientBottomBar.LENGTH_SHORT).show();
+		});
+	}
+
+	private void startFight (String type, String length, String format)
 	{
 		DatabaseReference myRef1 = FirebaseDatabase.getInstance().getReference("users/" + mAuth.getUid() + "/match_history");
 		DatabaseReference myRef2 = myRef1.push();
@@ -138,7 +184,14 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 		DateTimeFormatter myFormatTimeObj = DateTimeFormatter.ofPattern("HH:mm:ss");
 		String formattedDate = myDateObj.format(myFormatDateObj);
 		String formattedTime = myDateObj.format(myFormatTimeObj);
-		myRef2.setValue(new Match(myRef2.getKey(),"we", formattedDate, formattedTime,"friendly","to 10 points","10-4"));
+		myRef2.setValue(new Match(
+				myRef2.getKey(),
+				"we",
+				formattedDate,
+				formattedTime,
+				type,
+				format + " " + length,
+				"0-0"));
 		startActivity(new Intent(getApplicationContext(), FightActivity.class));
 	}
 }

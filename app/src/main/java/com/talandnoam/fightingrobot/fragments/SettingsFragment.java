@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 
 import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.facebook.login.LoginManager;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -38,6 +39,7 @@ public class SettingsFragment extends Fragment
 	private static final String KEY_PRIMARY = "theme", KEY_ITEM = "item",
 			KEY_BACKGROUND = "background", KEY_ITEM_BACKGROUND = "background item",
 			KEY_VIBRATION = "vibration", KEY_SOUND = "sound", KEY_LANGUAGE = "language";
+	private SwipeRefreshLayout mySwipeRefreshLayout;
 	private static final String ARG_PARAM1 = "param1";
 	private static final String ARG_PARAM2 = "param2";
 
@@ -94,27 +96,44 @@ public class SettingsFragment extends Fragment
 		final Button languageButton = rootView.findViewById(R.id.language_chooser); // TODO: Add language chooser
 		final Button clearButton = rootView.findViewById(R.id.clear_data_button);
 		final SwitchMaterial vibrationSwitch = rootView.findViewById(R.id.vibe_chooser);
+		mySwipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh_layout);
+
+		/*
+		 * Sets up a SwipeRefreshLayout.OnRefreshListener that is invoked when the user
+		 * performs a swipe-to-refresh gesture.
+		 */
+		mySwipeRefreshLayout.setOnRefreshListener(this::myUpdateOperation);
 
 		int backgroundColor = sharedPreferences.getInt(KEY_BACKGROUND, R.color.black);
-		Log.d(TAG, "onCreateView: backgroundColor " + Integer.toHexString(getResources().getColor(backgroundColor, null)));
 		rootView.setBackgroundColor(getResources().getColor(backgroundColor, null));
 
 		vibrationState = sharedPreferences.getBoolean(KEY_VIBRATION, false);
 
 		vibrationSwitch.setChecked(vibrationState);
-		vibrationSwitch.setOnClickListener(v ->
-		{
-			Snackbar.make(rootView, "Vibration is " + (vibrationSwitch.isChecked() ? "On" : "Off"), Snackbar.LENGTH_SHORT).setAnchorView(R.id.bottom_navigation).show();
-			final SharedPreferences.Editor editor = sharedPreferences.edit();
-			editor.putBoolean(KEY_VIBRATION, vibrationSwitch.isChecked());
-			editor.apply();
-		});
-
+		vibrationSwitch.setOnClickListener(view -> switchVibrationMode(rootView, vibrationSwitch));
 		clearButton.setOnClickListener(this::clearData);
 		primaryColorButton.setOnClickListener(this::choosePrimaryColor);
 		bgChooseButton.setOnClickListener(this::chooseBackgroundColor);
 		signOutButton.setOnClickListener(this::logoutVerify);
 		return rootView;
+	}
+
+	private void switchVibrationMode (View rootView, SwitchMaterial vibrationSwitch)
+	{
+		Snackbar.make(rootView, "Vibration is " + (vibrationSwitch.isChecked() ? "On" : "Off"), Snackbar.LENGTH_SHORT)
+				.setAnchorView(R.id.bottom_navigation).
+				show();
+		final SharedPreferences.Editor editor = sharedPreferences.edit();
+		editor.putBoolean(KEY_VIBRATION, vibrationSwitch.isChecked());
+		editor.apply();
+		requireActivity().recreate();
+	}
+
+	private void myUpdateOperation ()
+	{
+		Log.d(TAG, "myUpdateOperation: ");
+		requireActivity().recreate();
+		mySwipeRefreshLayout.setRefreshing(false);
 	}
 
 	private void clearData (View view)
