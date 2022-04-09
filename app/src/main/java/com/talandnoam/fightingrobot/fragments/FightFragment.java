@@ -186,8 +186,10 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 					format.equals("match format"))
 				Snackbar.make(view1,"Please fill all the fields", BaseTransientBottomBar.LENGTH_SHORT).show();
 			else
+			{
 				startFight(type, length, format);
-			myDialog.dismiss();
+				myDialog.dismiss();
+			}
 		});
 	}
 
