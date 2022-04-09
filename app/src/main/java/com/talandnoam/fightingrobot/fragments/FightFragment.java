@@ -109,8 +109,8 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 
 	private void handleSharedPreferences (View rootView)
 	{
-		int backgroundColor = sharedPreferences.getInt(KEY_BACKGROUND, R.color.black);
-		rootView.setBackgroundColor(getResources().getColor(backgroundColor, null));
+		int backgroundColor = sharedPreferences.getInt(KEY_BACKGROUND, R.color.white);
+		rootView.setBackgroundColor(getResources().getColor(backgroundColor, getResources().newTheme()));
 	}
 
 	private void initComponents (View rootView)

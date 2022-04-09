@@ -102,8 +102,8 @@ public class HistoryFragment extends Fragment
 		 */
 		mySwipeRefreshLayout.setOnRefreshListener(this::myUpdateOperation);
 
-		int backgroundColor = sharedPreferences.getInt(KEY_BACKGROUND, R.color.black);
-		rootView.setBackgroundColor(getResources().getColor(backgroundColor, null));
+		int backgroundColor = sharedPreferences.getInt(KEY_BACKGROUND, R.color.white);
+		rootView.setBackgroundColor(getResources().getColor(backgroundColor, getResources().newTheme()));
 
 		listView = rootView.findViewById(R.id.matches_list);
 		List<Match> allMatchesList = new ArrayList<>();

@@ -90,8 +90,8 @@ public class SignUpActivity extends AppCompatActivity
 
 	private void handleSharedPreferences ()
 	{
-		int backgroundColor = sharedPreferences.getInt(KEY_BACKGROUND, R.color.black);
-		findViewById(R.id.activity_sign_up).setBackgroundColor(getResources().getColor(backgroundColor, null));
+		int backgroundColor = sharedPreferences.getInt(KEY_BACKGROUND, R.color.white);
+		findViewById(R.id.activity_sign_up).setBackgroundColor(getResources().getColor(backgroundColor,  getResources().newTheme()));
 	}
 
 	private void setListeners ()

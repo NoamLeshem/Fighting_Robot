@@ -107,8 +107,8 @@ public class SettingsFragment extends Fragment
 
 	private void handleSharedPreferences()
 	{
-		int backgroundColor = sharedPreferences.getInt(KEY_BACKGROUND, R.color.black);
-		rootView.setBackgroundColor(getResources().getColor(backgroundColor, null));
+		int backgroundColor = sharedPreferences.getInt(KEY_BACKGROUND, R.color.white);
+		rootView.setBackgroundColor(getResources().getColor(backgroundColor,  getResources().newTheme()));
 
 		vibrationState = sharedPreferences.getBoolean(KEY_VIBRATION, false);
 	}

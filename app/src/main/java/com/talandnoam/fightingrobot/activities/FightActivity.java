@@ -56,8 +56,8 @@ public class FightActivity extends AppCompatActivity
 	private void handleSharedPreferences ()
 	{
 		SharedPreferences sharedPreferences = this.getSharedPreferences("MainActivity", Context.MODE_PRIVATE);
-		int backgroundColor = sharedPreferences.getInt(KEY_BACKGROUND, R.color.black);
-		findViewById(R.id.activity_fight).setBackgroundColor(getResources().getColor(backgroundColor, null));
+		int backgroundColor = sharedPreferences.getInt(KEY_BACKGROUND, R.color.white);
+		findViewById(R.id.activity_fight).setBackgroundColor(getResources().getColor(backgroundColor, getResources().newTheme()));
 	}
 
 	@SuppressLint("ClickableViewAccessibility")
