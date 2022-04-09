@@ -57,16 +57,45 @@ public class SignUpActivity extends AppCompatActivity
 	{
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_sign_up);
-
 		Objects.requireNonNull(getSupportActionBar()).hide();
 
 		getComponents();
 		initializeFirebase();
+		handleSharedPreferences();
+		setListeners();
+	}
 
+	private void getComponents ()
+	{
+		sharedPreferences = this.getSharedPreferences("MainActivity", Context.MODE_PRIVATE);
+		vibe = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+		toMainActivity = new Intent(this, MainActivity.class);
+		progressIndicator = findViewById(R.id.linearProgressIndicator);
+		emailPassSignUp = findViewById(R.id.user_and_password_signup);
+		passwordInputLayout = findViewById(R.id.textInputLayout1);
+		emailInputLayout = findViewById(R.id.textInputLayout);
+		showPassword = findViewById(R.id.show_password);
+		helpPassword = findViewById(R.id.help_password);
+		toLoginActivity = findViewById(R.id.sign_up);
+		userPassword = findViewById(R.id.password);
+		userEmail = findViewById(R.id.username);
+	}
+
+	private void initializeFirebase ()
+	{
+		mAuth = FirebaseAuth.getInstance();
+		firebaseDatabase = FirebaseDatabase.getInstance();
+		myRef1 = firebaseDatabase.getReference("users");
+	}
+
+	private void handleSharedPreferences ()
+	{
 		int backgroundColor = sharedPreferences.getInt(KEY_BACKGROUND, R.color.black);
 		findViewById(R.id.activity_sign_up).setBackgroundColor(getResources().getColor(backgroundColor, null));
+	}
 
-
+	private void setListeners ()
+	{
 		userEmail.addTextChangedListener(new TextValidator(userEmail)
 		{
 			@Override
@@ -85,13 +114,6 @@ public class SignUpActivity extends AppCompatActivity
 		showPassword.setOnCheckedChangeListener((compoundButton, isChecked) -> changePasswordState(isChecked));
 		emailPassSignUp.setOnClickListener(view -> login());
 		toLoginActivity.setOnClickListener(view -> activityLauncher(new Intent(this, LoginActivity.class)));
-	}
-
-	private void activityLauncher (Intent intent)
-	{
-		vibrate();
-		finish();
-		startActivity(intent);
 	}
 
 	private void validateEmailOrPassword (TextInputLayout inputLayout, String text, int resourceID, boolean isEmail)
@@ -116,48 +138,6 @@ public class SignUpActivity extends AppCompatActivity
 			helpPassword.setVisibility(View.VISIBLE);
 	}
 
-	private void vibrate ()
-	{
-		if (sharedPreferences.getBoolean(KEY_VIBRATION, false))
-			vibe.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE));
-	}
-
-	private void initializeFirebase ()
-	{
-		mAuth = FirebaseAuth.getInstance();
-		firebaseDatabase = FirebaseDatabase.getInstance();
-		myRef1 = firebaseDatabase.getReference("users");
-	}
-
-	private void showPasswordRules (View view)
-	{
-		vibrate();
-		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(view.getContext());
-		builder.setTitle(R.string.password_rules)
-				.setMessage(getString(R.string.password_rule) + "!@#&()–[{}]:;',?/*~$^+=<>")
-				.setNegativeButton("ok", (dialogInterface, i) -> {})
-				.setIcon(R.drawable.ic_password)
-				.setCancelable(true)
-				.create()
-				.show();
-	}
-
-	private void getComponents ()
-	{
-		sharedPreferences = this.getSharedPreferences("MainActivity", Context.MODE_PRIVATE);
-		vibe = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
-		toMainActivity = new Intent(this, MainActivity.class);
-		progressIndicator = findViewById(R.id.linearProgressIndicator);
-		emailPassSignUp = findViewById(R.id.user_and_password_signup);
-		passwordInputLayout = findViewById(R.id.textInputLayout1);
-		emailInputLayout = findViewById(R.id.textInputLayout);
-		showPassword = findViewById(R.id.show_password);
-		helpPassword = findViewById(R.id.help_password);
-		toLoginActivity = findViewById(R.id.sign_up);
-		userPassword = findViewById(R.id.password);
-		userEmail = findViewById(R.id.username);
-	}
-
 	private boolean isTextValidUsingRegex (String text, boolean isEmail)
 	{
 		String regex;
@@ -180,11 +160,29 @@ public class SignUpActivity extends AppCompatActivity
 		return matcher.matches();
 	}
 
+	private void showPasswordRules (View view)
+	{
+		vibrate();
+		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(view.getContext());
+		builder.setTitle(R.string.password_rules)
+				.setMessage(getString(R.string.password_rule) + "!@#&()–[{}]:;',?/*~$^+=<>")
+				.setNegativeButton("ok", (dialogInterface, i) -> {})
+				.setIcon(R.drawable.ic_password)
+				.setCancelable(true)
+				.show();
+	}
+
 	private void changePasswordState (boolean isChecked)
 	{
 		vibrate();
 		userPassword.setTransformationMethod(isChecked ? HideReturnsTransformationMethod.getInstance() : PasswordTransformationMethod.getInstance());
 		userPassword.setSelection(userPassword.getText().length());
+	}
+
+	private void vibrate ()
+	{
+		if (sharedPreferences.getBoolean(KEY_VIBRATION, false))
+			vibe.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE));
 	}
 
 	private void login ()
@@ -231,6 +229,13 @@ public class SignUpActivity extends AppCompatActivity
 		sendUserData(user);
 		progressIndicator.setVisibility(View.GONE);
 		activityLauncher(toMainActivity);
+	}
+
+	private void activityLauncher (Intent intent)
+	{
+		vibrate();
+		finish();
+		startActivity(intent);
 	}
 
 	private void sendUserData (FirebaseUser user)

@@ -15,6 +15,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -48,6 +49,8 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 
 	private FirebaseAuth mAuth;
 	private Vibrator vibe;
+	private Button autoButton;
+	private Button firebaseButton;
 
 	// TODO: Rename and change types of parameters
 	private String mParam1;
@@ -95,17 +98,31 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 	                          Bundle savedInstanceState)
 	{
 		// Inflate the layout for this fragment
-		final View rootView = inflater.inflate(R.layout.fragment_fight, container,
-				false);
+		final View rootView = inflater.inflate(R.layout.fragment_fight, container, false);
 
-		mAuth = FirebaseAuth.getInstance();
-		vibe = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+		handleSharedPreferences(rootView);
+		initComponents(rootView);
+		setListeners(container, rootView);
 
+		return rootView;
+	}
+
+	private void handleSharedPreferences (View rootView)
+	{
 		int backgroundColor = sharedPreferences.getInt(KEY_BACKGROUND, R.color.black);
 		rootView.setBackgroundColor(getResources().getColor(backgroundColor, null));
-		final Button autoButton = rootView.findViewById(R.id.auto_mode_button);
-		final Button firebaseButton = rootView.findViewById(R.id.firebaseButton);
+	}
 
+	private void initComponents (View rootView)
+	{
+		mAuth = FirebaseAuth.getInstance();
+		vibe = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+		autoButton = rootView.findViewById(R.id.auto_mode_button);
+		firebaseButton = rootView.findViewById(R.id.firebaseButton);
+	}
+
+	private void setListeners (ViewGroup container, View rootView)
+	{
 		autoButton.setOnClickListener(view ->
 				{
 					vibrate();
@@ -115,7 +132,6 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 							.show();
 				});
 		firebaseButton.setOnClickListener(view -> chooseFightingRules(view, container));
-		return rootView;
 	}
 
 	/**
@@ -156,22 +172,22 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 		getSpinnerAdapter(matchType, matchLength, matchFormat);
 		vibrate();
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(view.getContext());
-		builder.setTitle("Preparing the fight")
+		AlertDialog myDialog = builder.setTitle("Preparing the fight")
 				.setView(rootView)
 				.setCancelable(true)
 				.setNeutralButton("Cancel", (dialog, which) -> vibrate())
-				.create()
 				.show();
 		fightButton.setOnClickListener(view1 ->
 		{
 			String type = matchType.getSelectedItem().toString().trim();
 			String length = matchLength.getSelectedItem().toString().trim();
 			String format = matchFormat.getSelectedItem().toString().trim();
-			if (!type.equals("match type") && !length.equals("match format") &&
-					!format.equals("match length"))
-				startFight(type, length, format);
-			else
+			if (type.equals("match type") || length.equals("match length") ||
+					format.equals("match format"))
 				Snackbar.make(view1,"Please fill all the fields", BaseTransientBottomBar.LENGTH_SHORT).show();
+			else
+				startFight(type, length, format);
+			myDialog.dismiss();
 		});
 	}
 

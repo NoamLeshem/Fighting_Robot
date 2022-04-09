@@ -22,6 +22,8 @@ import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.talandnoam.fightingrobot.R;
 
 /**
@@ -33,12 +35,17 @@ public class SettingsFragment extends Fragment
 {
 	private static final String TAG = "SettingsFragment";
 	private static final Vibrator vibe  = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+	private final FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+	private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
 	// TODO: Rename parameter arguments, choose names that match
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 	private static final SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("MainActivity", Context.MODE_PRIVATE);
 	private static final String KEY_PRIMARY = "theme", KEY_ITEM = "item",
 			KEY_BACKGROUND = "background", KEY_ITEM_BACKGROUND = "background item",
 			KEY_VIBRATION = "vibration", KEY_SOUND = "sound", KEY_LANGUAGE = "language";
+	private View rootView;
+	private Button signOutButton, primaryColorButton, bgChooseButton, languageButton, clearButton;
+	private SwitchMaterial vibrationSwitch;
 	private SwipeRefreshLayout mySwipeRefreshLayout;
 	private static final String ARG_PARAM1 = "param1";
 	private static final String ARG_PARAM2 = "param2";
@@ -89,40 +96,54 @@ public class SettingsFragment extends Fragment
 	public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
 		// Inflate the layout for this fragment
-		final View rootView = inflater.inflate(R.layout.fragment_settings, container, false);
-		final Button signOutButton = rootView.findViewById(R.id.sign_out);
-		final Button primaryColorButton = rootView.findViewById(R.id.color_chooser);
-		final Button bgChooseButton = rootView.findViewById(R.id.bg_chooser);
-		final Button languageButton = rootView.findViewById(R.id.language_chooser); // TODO: Add language chooser
-		final Button clearButton = rootView.findViewById(R.id.clear_data_button);
-		final SwitchMaterial vibrationSwitch = rootView.findViewById(R.id.vibe_chooser);
-		mySwipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh_layout);
+		rootView = inflater.inflate(R.layout.fragment_settings, container, false);
 
-		/*
-		 * Sets up a SwipeRefreshLayout.OnRefreshListener that is invoked when the user
-		 * performs a swipe-to-refresh gesture.
-		 */
-		mySwipeRefreshLayout.setOnRefreshListener(this::myUpdateOperation);
+		getViews();
+		handleSharedPreferences();
+		setListeners();
 
+		return rootView;
+	}
+
+	private void handleSharedPreferences()
+	{
 		int backgroundColor = sharedPreferences.getInt(KEY_BACKGROUND, R.color.black);
 		rootView.setBackgroundColor(getResources().getColor(backgroundColor, null));
 
 		vibrationState = sharedPreferences.getBoolean(KEY_VIBRATION, false);
+	}
 
+	private void setListeners ()
+	{
 		vibrationSwitch.setChecked(vibrationState);
 		vibrationSwitch.setOnClickListener(view -> switchVibrationMode(rootView, vibrationSwitch));
 		clearButton.setOnClickListener(this::clearData);
 		primaryColorButton.setOnClickListener(this::choosePrimaryColor);
 		bgChooseButton.setOnClickListener(this::chooseBackgroundColor);
 		signOutButton.setOnClickListener(this::logoutVerify);
-		return rootView;
+		/*
+		 * Sets up a SwipeRefreshLayout.OnRefreshListener that is invoked when the user
+		 * performs a swipe-to-refresh gesture.
+		 */
+		mySwipeRefreshLayout.setOnRefreshListener(this::myUpdateOperation);
+	}
+
+	private void getViews ()
+	{
+		signOutButton = rootView.findViewById(R.id.sign_out);
+		primaryColorButton = rootView.findViewById(R.id.color_chooser);
+		bgChooseButton = rootView.findViewById(R.id.bg_chooser);
+		languageButton = rootView.findViewById(R.id.language_chooser); // TODO: Add language chooser
+		clearButton = rootView.findViewById(R.id.clear_data_button);
+		vibrationSwitch = rootView.findViewById(R.id.vibe_chooser);
+		mySwipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh_layout);
 	}
 
 	private void switchVibrationMode (View rootView, SwitchMaterial vibrationSwitch)
 	{
 		Snackbar.make(rootView, "Vibration is " + (vibrationSwitch.isChecked() ? "On" : "Off"), Snackbar.LENGTH_SHORT)
-				.setAnchorView(R.id.bottom_navigation).
-				show();
+				.setAnchorView(R.id.bottom_navigation)
+				.show();
 		final SharedPreferences.Editor editor = sharedPreferences.edit();
 		editor.putBoolean(KEY_VIBRATION, vibrationSwitch.isChecked());
 		editor.apply();
@@ -141,16 +162,18 @@ public class SettingsFragment extends Fragment
 		vibrate();
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(view.getContext());
 		builder.setTitle("Clear Data")
-				.setMessage("Are you sure you want to clear all data?")
+				.setMessage("Are you sure you want to clear all data?\nThis action cannot be undone.\n\nThis will also clear your saved matches history.")
 				.setPositiveButton("ok", (dialogInterface, i) ->
 				{
 					vibrate();
 					sharedPreferences.edit().clear().apply();
+					DatabaseReference myRef1 = firebaseDatabase.getReference("users/" + mAuth.getUid() + "/match_history");
+					myRef1.removeValue();
+					requireActivity().recreate();
 				})
 				.setNegativeButton("cancel", (dialogInterface, i) ->{})
 				.setIcon(R.drawable.ic_palette)
 				.setCancelable(true)
-				.create()
 				.show();
 	}
 
@@ -178,7 +201,6 @@ public class SettingsFragment extends Fragment
 				})
 				.setIcon(R.drawable.ic_palette)
 				.setCancelable(true)
-				.create()
 				.show();
 	}
 
@@ -273,7 +295,6 @@ public class SettingsFragment extends Fragment
 				})
 				.setIcon(R.drawable.ic_palette)
 				.setCancelable(true)
-				.create()
 				.show();
 	}
 
@@ -290,7 +311,6 @@ public class SettingsFragment extends Fragment
 				})
 				.setIcon(R.drawable.ic_logout)
 				.setCancelable(true)
-				.create()
 				.show();
 	}
 

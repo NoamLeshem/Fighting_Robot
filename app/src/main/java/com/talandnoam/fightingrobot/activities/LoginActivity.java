@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.splashscreen.SplashScreen;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -86,25 +87,56 @@ public class LoginActivity extends Activity
 		}
 	}
 
-	private void activityLauncher (Intent intent)
-	{
-		vibrate();
-		finish();
-		startActivity(intent);
-	}
-
 	@Override
 	protected void onCreate (Bundle savedInstanceState)
 	{
+		// Handle the splash screen transition.
+		SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
+
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
 
 		getComponents();
 		initializeFirebase();
+		handleSharedPreferences();
+		setListeners();
+	}
 
+	private void getComponents ()
+	{
+		sharedPreferences = this.getSharedPreferences("MainActivity", Context.MODE_PRIVATE);
+		vibrationState = sharedPreferences.getBoolean(KEY_VIBRATION, false);
+		toMainActivity = new Intent(this, MainActivity.class);
+		vibe = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
+		progressIndicator = findViewById(R.id.linearProgressIndicator);
+		emailPassLogin = findViewById(R.id.user_and_password_login);
+		passwordInputLayout = findViewById(R.id.textInputLayout1);
+		emailInputLayout = findViewById(R.id.textInputLayout);
+		loginWithFacebook = findViewById(R.id.login_button);
+		callbackManager = CallbackManager.Factory.create();
+		toSignUpActivity = findViewById(R.id.new_account);
+		helpPassword = findViewById(R.id.help_password);
+		showPassword = findViewById(R.id.show_password);
+		googleButton = findViewById(R.id.google_button);
+		userPassword = findViewById(R.id.password);
+		userEmail = findViewById(R.id.username);
+	}
+
+	private void initializeFirebase ()
+	{
+		mAuth = FirebaseAuth.getInstance();
+		firebaseDatabase = FirebaseDatabase.getInstance();
+		myRef1 = firebaseDatabase.getReference("users");
+	}
+
+	private void handleSharedPreferences ()
+	{
 		int backgroundColor = sharedPreferences.getInt(KEY_BACKGROUND, R.color.black);
 		findViewById(R.id.activity_login).setBackgroundColor(getResources().getColor(backgroundColor, null));
+	}
 
+	private void setListeners ()
+	{
 		userEmail.addTextChangedListener(new TextValidator(userEmail)
 		{
 			@Override
@@ -118,19 +150,12 @@ public class LoginActivity extends Activity
 			public void validate (TextView textView, String text)
 			{ validateEmailOrPassword(passwordInputLayout, text, R.string.invalid_password, false); }
 		});
-
 		toSignUpActivity.setOnClickListener(view -> activityLauncher(new Intent(this, SignUpActivity.class)));
 		showPassword.setOnCheckedChangeListener((compoundButton, isChecked) -> changePasswordState(isChecked));
 		loginWithFacebook.setOnClickListener(view -> facebookLogin());
 		helpPassword.setOnClickListener(this::showPasswordRules);
 		googleButton.setOnClickListener(view -> googleLogin());
 		emailPassLogin.setOnClickListener(view -> login());
-	}
-
-	private void vibrate ()
-	{
-		if (vibrationState)
-			vibe.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE));
 	}
 
 	private void validateEmailOrPassword (TextInputLayout inputLayout, String text, int resourceID, boolean isEmail)
@@ -155,46 +180,6 @@ public class LoginActivity extends Activity
 			helpPassword.setVisibility(View.VISIBLE);
 	}
 
-	private void initializeFirebase ()
-	{
-		mAuth = FirebaseAuth.getInstance();
-		firebaseDatabase = FirebaseDatabase.getInstance();
-		myRef1 = firebaseDatabase.getReference("users");
-	}
-
-	private void getComponents ()
-	{
-		sharedPreferences = this.getSharedPreferences("MainActivity", Context.MODE_PRIVATE);
-		vibrationState = sharedPreferences.getBoolean(KEY_VIBRATION, false);
-		toMainActivity = new Intent(this, MainActivity.class);
-		vibe = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
-		progressIndicator = findViewById(R.id.linearProgressIndicator);
-		emailPassLogin = findViewById(R.id.user_and_password_login);
-		passwordInputLayout = findViewById(R.id.textInputLayout1);
-		emailInputLayout = findViewById(R.id.textInputLayout);
-		loginWithFacebook = findViewById(R.id.login_button);
-		callbackManager = CallbackManager.Factory.create();
-		toSignUpActivity = findViewById(R.id.new_account);
-		helpPassword = findViewById(R.id.help_password);
-		showPassword = findViewById(R.id.show_password);
-		googleButton = findViewById(R.id.google_button);
-		userPassword = findViewById(R.id.password);
-		userEmail = findViewById(R.id.username);
-	}
-
-	private void showPasswordRules (View view)
-	{
-		vibrate();
-		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(view.getContext());
-		builder.setTitle(R.string.password_rules)
-				.setMessage(getString(R.string.password_rule) + "!@#&()–[{}]:;',?/*~$^+=<>")
-				.setNegativeButton("ok", (dialogInterface, i) -> {})
-				.setIcon(R.drawable.ic_password)
-				.setCancelable(true)
-				.create()
-				.show();
-	}
-
 	private boolean isTextValidUsingRegex (String text, boolean isEmail)
 	{
 		String regex;
@@ -217,11 +202,29 @@ public class LoginActivity extends Activity
 		return matcher.matches();
 	}
 
+	private void showPasswordRules (View view)
+	{
+		vibrate();
+		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(view.getContext());
+		builder.setTitle(R.string.password_rules)
+				.setMessage(getString(R.string.password_rule) + "!@#&()–[{}]:;',?/*~$^+=<>")
+				.setNegativeButton("ok", (dialogInterface, i) -> {})
+				.setIcon(R.drawable.ic_password)
+				.setCancelable(true)
+				.show();
+	}
+
 	private void changePasswordState (boolean isChecked)
 	{
 		vibrate();
 		userPassword.setTransformationMethod(isChecked ? HideReturnsTransformationMethod.getInstance() : PasswordTransformationMethod.getInstance());
 		userPassword.setSelection(userPassword.getText().length());
+	}
+
+	private void vibrate ()
+	{
+		if (vibrationState)
+			vibe.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE));
 	}
 
 	private void login ()
@@ -272,6 +275,13 @@ public class LoginActivity extends Activity
 		});
 	}
 
+	private void handleFacebookAccessToken (AccessToken token)
+	{
+		Log.d(TAG, "handleFacebookAccessToken:" + token.getUserId());
+		AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
+		mAuth.signInWithCredential(credential).addOnCompleteListener(this, this::handleTaskResult);
+	}
+
 	private void googleLogin ()
 	{
 		vibrate();
@@ -318,13 +328,6 @@ public class LoginActivity extends Activity
 		Log.d(TAG, "onActivityResult: data = " + data.getExtras().toString());
 	}
 
-	private void handleFacebookAccessToken (AccessToken token)
-	{
-		Log.d(TAG, "handleFacebookAccessToken:" + token.getUserId());
-		AuthCredential credential = FacebookAuthProvider.getCredential(token.getToken());
-		mAuth.signInWithCredential(credential).addOnCompleteListener(this, this::handleTaskResult);
-	}
-
 	private void firebaseAuthWithGoogle (String idToken)
 	{
 		AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
@@ -357,6 +360,13 @@ public class LoginActivity extends Activity
 		if (user != null) sendUserData(user);
 		progressIndicator.setVisibility(View.GONE);
 		activityLauncher(toMainActivity);
+	}
+
+	private void activityLauncher (Intent intent)
+	{
+		vibrate();
+		finish();
+		startActivity(intent);
 	}
 
 	private void sendUserData (FirebaseUser user)

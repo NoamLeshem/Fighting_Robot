@@ -42,15 +42,7 @@ public class MainActivity extends AppCompatActivity
 
 		initializeVariables();
 		handleSharedPreferences();
-		initializeFragment(); // initializing the fragment
-
-		navigationView.setOnItemSelectedListener(item -> handleItemSelected(item.getItemId()));
-		fragmentManager.setFragmentResultListener(
-				"requestKey", this, (requestKey, result) ->
-		{
-			finish();
-			startActivity(new Intent(getApplicationContext(), LoginActivity.class));
-		});
+		setListeners();
 	}
 
 	private void initializeVariables ()
@@ -63,27 +55,25 @@ public class MainActivity extends AppCompatActivity
 		actionBar = getSupportActionBar();
 	}
 
-	private void initializeFragment ()
+	private void handleSharedPreferences ()
 	{
 		Objects.requireNonNull(actionBar).setTitle(R.string.fight);
-		// Instantiate the fragment.
 		int fragmentId = sharedPreferences.getInt(KEY_FRAGMENT, R.id.fight);
 		handleItemSelected(fragmentId);
 		navigationView.setSelectedItemId(fragmentId);
-	}
-
-	private void handleSharedPreferences ()
-	{
-		int fragmentId = sharedPreferences.getInt(KEY_FRAGMENT, R.id.fight);
-		handleItemSelected(fragmentId);
 		int themeId = sharedPreferences.getInt(KEY_THEME, R.style.ThemeFightingRobot);
 		this.setTheme(themeId);
 	}
 
-	private void vibrate ()
+	private void setListeners ()
 	{
-		if (vibrationState)
-			vibe.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE));
+		navigationView.setOnItemSelectedListener(item -> handleItemSelected(item.getItemId()));
+		fragmentManager.setFragmentResultListener(
+				"requestKey", this, (requestKey, result) ->
+				{
+					finish();
+					startActivity(new Intent(getApplicationContext(), LoginActivity.class));
+				});
 	}
 
 	private boolean handleItemSelected (int itemId)
@@ -111,6 +101,12 @@ public class MainActivity extends AppCompatActivity
 				.replace(R.id.fragment_container, selectedFragment)
 				.commit();
 		return true;
+	}
+
+	private void vibrate ()
+	{
+		if (vibrationState)
+			vibe.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE));
 	}
 
 	@Override

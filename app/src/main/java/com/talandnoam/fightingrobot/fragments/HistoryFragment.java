@@ -40,6 +40,8 @@ public class HistoryFragment extends Fragment
 	private SwipeRefreshLayout mySwipeRefreshLayout;
 	private static final String TAG = "HistoryFragment";
 
+	private ListView listView;
+
 	// TODO: Rename parameter arguments, choose names that match
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 	private static final String ARG_PARAM1 = "param1";
@@ -100,31 +102,30 @@ public class HistoryFragment extends Fragment
 		int backgroundColor = sharedPreferences.getInt(KEY_BACKGROUND, R.color.black);
 		rootView.setBackgroundColor(getResources().getColor(backgroundColor, null));
 
-		ListView listView = rootView.findViewById(R.id.matches_list);
-		List<Match> allMatchesList = extractAllMatches();
-		Log.d(TAG, "onCreateView: all matches: " + allMatchesList);
-		inflateListView(allMatchesList, listView);
+		listView = rootView.findViewById(R.id.matches_list);
+		extractAllMatches();
 
 		return rootView;
 	}
 
-	private List<Match> extractAllMatches ()
+	private void extractAllMatches ()
 	{
 		final List<Match> allMatchesList = new ArrayList<>();
 		FirebaseAuth mAuth = FirebaseAuth.getInstance();
 		DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("users/" + mAuth.getUid() + "/match_history");
-		databaseReference.addListenerForSingleValueEvent(new ValueEventListener() {
+		databaseReference.addListenerForSingleValueEvent(new ValueEventListener()
+		{
 			@Override
 			public void onDataChange (@NonNull DataSnapshot snapshot)
 			{
 				for (DataSnapshot matchSnapshot : snapshot.getChildren())
 					allMatchesList.add(matchSnapshot.getValue(Match.class));
+				inflateListView(allMatchesList, listView);
 			}
 
 			@Override
 			public void onCancelled (@NonNull DatabaseError error) {}
 		});
-		return allMatchesList;
 	}
 
 	private void myUpdateOperation ()
@@ -132,6 +133,7 @@ public class HistoryFragment extends Fragment
 		// This method performs the actual data-refresh operation.
 		// The method calls setRefreshing(false) when it's finished.
 		// Do an update
+		extractAllMatches();
 		Log.i(TAG, "Performing update");
 		mySwipeRefreshLayout.setRefreshing(false);
 	}
