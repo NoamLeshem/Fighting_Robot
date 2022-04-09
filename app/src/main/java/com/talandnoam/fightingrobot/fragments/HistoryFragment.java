@@ -41,6 +41,8 @@ public class HistoryFragment extends Fragment
 	private static final String TAG = "HistoryFragment";
 
 	private ListView listView;
+	boolean isListFull = false;
+	MatchListAdapter adapter;
 
 	// TODO: Rename parameter arguments, choose names that match
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -50,6 +52,7 @@ public class HistoryFragment extends Fragment
 	// TODO: Rename and change types of parameters
 	private String mParam1;
 	private String mParam2;
+
 
 	public HistoryFragment ()
 	{
@@ -103,14 +106,15 @@ public class HistoryFragment extends Fragment
 		rootView.setBackgroundColor(getResources().getColor(backgroundColor, null));
 
 		listView = rootView.findViewById(R.id.matches_list);
-		extractAllMatches();
-
+		List<Match> allMatchesList = new ArrayList<>();
+		adapter = new MatchListAdapter(this.getContext(), allMatchesList);
+		inflateListView(listView);
+		extractAllMatches(allMatchesList);
 		return rootView;
 	}
-
-	private void extractAllMatches ()
+	private void extractAllMatches (List<Match> allMatchesList)
 	{
-		final List<Match> allMatchesList = new ArrayList<>();
+		isListFull = false;
 		FirebaseAuth mAuth = FirebaseAuth.getInstance();
 		DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("users/" + mAuth.getUid() + "/match_history");
 		databaseReference.addListenerForSingleValueEvent(new ValueEventListener()
@@ -120,7 +124,7 @@ public class HistoryFragment extends Fragment
 			{
 				for (DataSnapshot matchSnapshot : snapshot.getChildren())
 					allMatchesList.add(matchSnapshot.getValue(Match.class));
-				inflateListView(allMatchesList, listView);
+				adapter.notifyDataSetChanged();
 			}
 
 			@Override
@@ -133,14 +137,14 @@ public class HistoryFragment extends Fragment
 		// This method performs the actual data-refresh operation.
 		// The method calls setRefreshing(false) when it's finished.
 		// Do an update
-		extractAllMatches();
+		// extractAllMatches(allMatchesList);
 		Log.i(TAG, "Performing update");
 		mySwipeRefreshLayout.setRefreshing(false);
 	}
 
-	private void inflateListView (List<Match> allMatchesList, ListView listView)
+	private void inflateListView (ListView listView)
 	{
-		listView.setAdapter(new MatchListAdapter(this.getContext(), allMatchesList));
+		listView.setAdapter(adapter);
 		listView.setDivider(null);
 		listView.setDividerHeight(0);
 	}
