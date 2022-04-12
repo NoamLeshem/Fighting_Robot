@@ -8,6 +8,7 @@ import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +19,10 @@ import android.widget.TextView;
 
 import androidx.cardview.widget.CardView;
 
+import com.bumptech.glide.Glide;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.talandnoam.fightingrobot.R;
 import com.talandnoam.fightingrobot.classes.Match;
 
@@ -25,14 +30,22 @@ import java.util.List;
 
 public class MatchListAdapter extends ArrayAdapter<Match>
 {
-	private static final String TAG = "MatchListAdapter",KEY_VIBRATION = "vibration";
 	private static final SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("MainActivity", Context.MODE_PRIVATE);
 	private static final Vibrator vibe = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
-	TextView headerTextView, matchId, matchWinner, matchDate, matchTime, matchType, matchFormat, matchResult;
+	private TextView headerTextView, matchId, matchWinner, matchDate, matchTime, matchType, matchFormat, matchResult;
+	private static final String TAG = "MatchListAdapter" ,KEY_VIBRATION = "vibration";
+	private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
+	private Context context;
 
 	public MatchListAdapter(Context context, List<Match> objects)
 	{
 		super(context, 0, objects);
+		this.setContext(context);
+	}
+
+	private void setContext (Context context)
+	{
+		this.context = context;
 	}
 
 	@Override
@@ -47,9 +60,20 @@ public class MatchListAdapter extends ArrayAdapter<Match>
 		CardView cardView = convertView.findViewById(R.id.base_card_view);
 		ImageView arrow = convertView.findViewById(R.id.arrow_button);
 		LinearLayout hiddenView = convertView.findViewById(R.id.hidden_view);
+		ImageView matchImage = convertView.findViewById(R.id.icon);
 		cardView.setOnClickListener(view -> handleExpandAndCollapse(cardView, arrow, hiddenView));
 		arrow.setOnClickListener(view -> handleExpandAndCollapse(cardView, arrow, hiddenView));
-
+		Log.d(TAG, "getView: " + match.getMatchId());
+		StorageReference imageReference = FirebaseStorage.getInstance().getReference("users/" + mAuth.getUid() + "/matches/" + match.getMatchId());
+		View finalConvertView = convertView;
+		imageReference.getDownloadUrl()
+				.addOnSuccessListener(uri ->
+						Glide
+								.with(finalConvertView)
+								.load(uri)
+								.centerCrop()
+								.placeholder(R.drawable.ic_launcher_foreground)
+								.into(matchImage));
 		setValues(position, match);
 		return convertView;
 	}

@@ -7,6 +7,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.Button;
 import android.widget.TextView;
 
@@ -30,6 +32,7 @@ public class FightActivity extends AppCompatActivity
 	private DatabaseReference myRef2, myRef3, myRef4, myRef5, myRef6;
 	private final FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
 	private static final String KEY_BACKGROUND = "background", TAG = "FightActivity";
+	private WebView webView;
 	private JoystickView joystickLeft, joystickRight;
 	private String matchIDString, userIDString;
 	private TextView matchFormat, matchScore;
@@ -89,13 +92,11 @@ public class FightActivity extends AppCompatActivity
 			{ Log.d(TAG, "onCancelled:     " + error.getMessage()); }
 		});
 		shootButton.setOnTouchListener((v, event) -> FightActivity.this.sendToFirebaseWhilePressed(event));
-
 		joystickLeft.setOnMoveListener((angle, strength) ->
 		{
 			myRef2.setValue(angle);
 			myRef3.setValue(strength);
 		});
-
 		joystickRight.setOnMoveListener((angle, strength) ->
 		{
 			double x = Math.cos(Math.toRadians(angle)) * (strength * 0.9) + 90;
@@ -103,6 +104,8 @@ public class FightActivity extends AppCompatActivity
 			myRef4.setValue((int) x);
 			myRef5.setValue((int) y);
 		});
+		webView.setWebViewClient(new WebViewClient());
+		webView.loadUrl("http://192.168.1.27:8000/index.html");
 	}
 
 	private void setMatchScore ()
@@ -145,6 +148,7 @@ public class FightActivity extends AppCompatActivity
 
 	private void getViews ()
 	{
+		webView = findViewById(R.id.web_view);
 		joystickLeft = findViewById(R.id.joystick_left);
 		joystickRight = findViewById(R.id.joystick_right);
 		shootButton = findViewById(R.id.shoot_button);
