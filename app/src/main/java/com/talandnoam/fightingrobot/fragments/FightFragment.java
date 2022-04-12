@@ -109,8 +109,8 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 
 	private void handleSharedPreferences (View rootView)
 	{
-		int backgroundColor = sharedPreferences.getInt(KEY_BACKGROUND, R.color.white);
-		rootView.setBackgroundColor(getResources().getColor(backgroundColor, getResources().newTheme()));
+		int backgroundColor = sharedPreferences.getInt(KEY_BACKGROUND, R.color.black);
+		rootView.setBackgroundColor(requireActivity().getColor(backgroundColor));
 	}
 
 	private void initComponents (View rootView)
@@ -172,10 +172,10 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 		getSpinnerAdapter(matchType, matchLength, matchFormat);
 		vibrate();
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(view.getContext());
-		AlertDialog myDialog = builder.setTitle("Preparing the fight")
+		AlertDialog myDialog = builder.setTitle(R.string.prep_the_fight)
 				.setView(rootView)
 				.setCancelable(true)
-				.setNeutralButton("Cancel", (dialog, which) -> vibrate())
+				.setNeutralButton(R.string.cancel, (dialog, which) -> vibrate())
 				.show();
 		fightButton.setOnClickListener(view1 ->
 		{
@@ -184,7 +184,7 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 			String format = matchFormat.getSelectedItem().toString().trim();
 			if (type.equals("match type") || length.equals("match length") ||
 					format.equals("match format"))
-				Snackbar.make(view1,"Please fill all the fields", BaseTransientBottomBar.LENGTH_SHORT).show();
+				Snackbar.make(view1, R.string.fill_all, BaseTransientBottomBar.LENGTH_SHORT).show();
 			else
 			{
 				startFight(type, length, format);

@@ -13,20 +13,14 @@
     <string name="try_again">Clear</string>
     <string name="sign_out">sign out</string>
     <string name="new_account">Don\'t have an account? Create a new one</string>
-    <string name="idToken">701093442847-ccfcnd36pa2cpdi2p969aqp3293d6ecc.apps.googleusercontent.com</string>
+    <string name="idToken" translatable="false">701093442847-ccfcnd36pa2cpdi2p969aqp3293d6ecc.apps.googleusercontent.com</string>
     <string name="sign_in_with_google">SignIn with Google</string>
-    <string name="facebook_app_id">418368376337352</string>
-    <string name="fb_login_protocol_scheme">fb418368376337352</string>
-    <string name="example_mail">example@gmail.com</string>
+    <string name="facebook_app_id" translatable="false">418368376337352</string>
+    <string name="fb_login_protocol_scheme" translatable="false">fb418368376337352</string>
+    <string name="example_mail" translatable="false">example@gmail.com</string>
     <string name="show_password">show password</string>
     <string name="password_rules">password rules</string>
-    <string name="password_rule">password must:\n
-                                \t\tbe at least 8 characters\n
-                                \t\tbe at most 20 characters\n
-                                \t\tinclude at least one digit[0-9]\n
-                                \t\tinclude at least one lowercase letter[a-z]\n
-                                \t\tinclude at least one uppercase letter[A-Z]\n
-                                \t\tinclude at least one of the special character below:\n\t\t</string>
+    <string name="password_rule">password must:                                  \t\tbe at least 8 characters                                  \t\tbe at most 20 characters                                  \t\tinclude at least one digit[0-9]                                  \t\tinclude at least one lowercase letter[a-z]                                  \t\tinclude at least one uppercase letter[A-Z]                                  \t\tinclude at least one of the special character below:</string>
     <string name="sign_in">Already have an account? Sign in</string>
     <string name="sign_up">sign up</string>
     <string name="settings">Settings</string>
@@ -35,11 +29,10 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="auto_mode">automatic mode - magic</string>
-    <string name="firebase">firebase - manual mode</string>
+    <string name="firebase">manual mode</string>
     <string name="connect_using">Connect to the robot using:</string>
     <string name="continue_with_google">continue with google</string>
     <string name="appearance">\t\tAppearance</string>
-    <string name="primary_color">Primary Color</string>
     <string name="background_color">Background color</string>
     <string name="shoot">shoot</string>
     <string name="behavior">\t\tBehavior</string>
@@ -52,4 +45,51 @@
     <string name="haptic_feedback">Haptic Feedback</string>
     <string name="background">background</string>
     <string name="color">color</string>
+    <string name="default_web_client_id2" translatable="false">AIzaSyBNVxgggZjMnHqKZJNcxcBONRYK4XsIo_U</string>
+    <string name="default_web_client_id1" translatable="false">AIzaSyBo8-oC-0ILJOY1EomhNtNOp-mtwWQTwiQ</string> <!-- API key-->
+    <string name="match_format">match format</string>
+    <string name="team_name">team name</string>
+    <string name="placeholder" translatable="false">placeholder</string>
+    <string name="match_details">match details</string>
+    <string name="todo" translatable="false">TODO</string>
+    <string name="choose_the_fight_rules">choose the fight rules</string>
+    <string name="tilt_your_phone_nthe_next_screen_is_horizontal_nrotate_your_phone_for_proper_use">Tilt your phone. The next screen is horizontal rotate your phone for proper use</string>
+    <string name="start">Start</string>
+    <string name="you_lost">You lost!</string>
+    <string name="lose_messege">You lost the match! hahaha Loser cry about it:D</string>
+    <string name="ok">OK</string>
+    <string name="wrong_password">Wrong password</string>
+    <string name="press_back_again">Please click BACK again to exit.</string>
+    <string name="email_occupied">The email address is already in use by another account.</string>
+    <string name="auth_failed">Authentication failed.</string>
+    <string name="prep_the_fight">Preparing the fight</string>
+    <string name="cancel">Cancel</string>
+    <string name="fill_all">Please fill all the fields</string>
+    <string name="vibe_is">Vibration is</string>
+    <string name="on">On</string>
+    <string name="off">Off</string>
+    <string name="clear_data">Clear Data</string>
+    <string name="are_you_sure">Are you sure you want to clear all data?\nThis action cannot be undone.\n\nThis will also clear your saved matches history.</string>
+    <string name="white">white</string>
+    <string name="black">black</string>
+    <string name="gray">gray</string>
+    <string name="light_blue">light blue</string>
+    <string name="light_red">light red</string>
+    <string name="light_green">light green</string>
+    <string name="light_yellow">light yellow</string>
+    <string name="light_purple">light purple</string>
+    <string name="dark_blue">dark blue</string>
+    <string name="dark_red">dark red</string>
+    <string name="dark_green">dark green</string>
+    <string name="dark_yellow">dark yellow</string>
+    <string name="dark_purple" translatable="false">dark purple</string>
+    <string name="match_length_string" translatable="false">match length</string>
+    <string name="match_format_string" translatable="false">match format</string>
+    <string name="match_type_string" translatable="false">match type</string>
+    <string name="change_bg_color">Change Background Color</string>
+    <string name="change_theme_color">Change Theme Color</string>
+    <string name="confirm_logout">confirm logout</string>
+    <string name="logout_confirm">are you sure you want to logout?</string>
+    <string name="yes">yes</string>
+    <string name="primary_color">Primary Color</string>
 </resources>

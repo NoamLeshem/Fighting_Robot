@@ -39,9 +39,8 @@ public class SignUpActivity extends AppCompatActivity
 	private TextInputLayout emailInputLayout, passwordInputLayout;
 	private static final String KEY_BACKGROUND = "background";
 	private LinearProgressIndicator progressIndicator;
-	private boolean isEmailValid, isPasswordValid;
+	private boolean isEmailValid, isPasswordValid, vibrationState;
 	private Button emailPassSignUp, helpPassword;
-	private SharedPreferences sharedPreferences;
 	private FirebaseDatabase firebaseDatabase;
 	private EditText userEmail, userPassword;
 	private int numberOfIncorrectAttempts;
@@ -59,17 +58,21 @@ public class SignUpActivity extends AppCompatActivity
 		setContentView(R.layout.activity_sign_up);
 		Objects.requireNonNull(getSupportActionBar()).hide();
 
-		getComponents();
+		getViews();
+		initVariables();
 		initializeFirebase();
 		handleSharedPreferences();
 		setListeners();
 	}
 
-	private void getComponents ()
+	private void initVariables ()
 	{
-		sharedPreferences = this.getSharedPreferences("MainActivity", Context.MODE_PRIVATE);
 		vibe = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
 		toMainActivity = new Intent(this, MainActivity.class);
+	}
+
+	private void getViews ()
+	{
 		progressIndicator = findViewById(R.id.linearProgressIndicator);
 		emailPassSignUp = findViewById(R.id.user_and_password_signup);
 		passwordInputLayout = findViewById(R.id.textInputLayout1);
@@ -90,8 +93,10 @@ public class SignUpActivity extends AppCompatActivity
 
 	private void handleSharedPreferences ()
 	{
-		int backgroundColor = sharedPreferences.getInt(KEY_BACKGROUND, R.color.white);
-		findViewById(R.id.activity_sign_up).setBackgroundColor(getResources().getColor(backgroundColor,  getResources().newTheme()));
+		SharedPreferences sharedPreferences = this.getSharedPreferences("MainActivity", Context.MODE_PRIVATE);
+		vibrationState = sharedPreferences.getBoolean(KEY_VIBRATION, false);
+		int backgroundColor = sharedPreferences.getInt(KEY_BACKGROUND, R.color.black);
+		findViewById(R.id.activity_sign_up).setBackgroundColor(getColor(backgroundColor));
 	}
 
 	private void setListeners ()
@@ -181,7 +186,7 @@ public class SignUpActivity extends AppCompatActivity
 
 	private void vibrate ()
 	{
-		if (sharedPreferences.getBoolean(KEY_VIBRATION, false))
+		if (vibrationState)
 			vibe.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE));
 	}
 
@@ -212,10 +217,10 @@ public class SignUpActivity extends AppCompatActivity
 				// If sign in fails, display a message to the user.
 				Log.w(TAG, "createUserWithEmail:failure\n\n" + Objects.requireNonNull(task.getException()).getMessage() + "\n\n", task.getException());
 				if (Objects.requireNonNull(task.getException().getMessage()).equals("The email address is already in use by another account."))
-					Snackbar.make(emailPassSignUp, "The email address is already in use by another account.", Snackbar.LENGTH_LONG)
+					Snackbar.make(emailPassSignUp, R.string.email_occupied, Snackbar.LENGTH_LONG)
 							.setAction("clear",view -> userEmail.setText(""))
 							.show();
-				Toast.makeText(this, "Authentication failed.", Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, R.string.auth_failed, Toast.LENGTH_SHORT).show();
 				progressIndicator.setVisibility(View.GONE);
 				emailPassSignUp.setEnabled(true);
 				// signIn(email, password);

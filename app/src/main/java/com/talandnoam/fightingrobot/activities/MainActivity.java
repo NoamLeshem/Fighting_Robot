@@ -47,8 +47,6 @@ public class MainActivity extends AppCompatActivity
 
 	private void initializeVariables ()
 	{
-		sharedPreferences = this.getSharedPreferences(TAG, Context.MODE_PRIVATE);
-		vibrationState = sharedPreferences.getBoolean(KEY_VIBRATION, true);
 		vibe = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
 		navigationView = findViewById(R.id.bottom_navigation);
 		fragmentManager = getSupportFragmentManager();
@@ -57,7 +55,10 @@ public class MainActivity extends AppCompatActivity
 
 	private void handleSharedPreferences ()
 	{
-		Objects.requireNonNull(actionBar).setTitle(R.string.fight);
+		sharedPreferences = this.getSharedPreferences(TAG, Context.MODE_PRIVATE);
+		vibrationState = sharedPreferences.getBoolean(KEY_VIBRATION, false);
+		sharedPreferences = this.getSharedPreferences(TAG, Context.MODE_PRIVATE);
+		vibrationState = sharedPreferences.getBoolean(KEY_VIBRATION, false);
 		int fragmentId = sharedPreferences.getInt(KEY_FRAGMENT, R.id.fight);
 		handleItemSelected(fragmentId);
 		navigationView.setSelectedItemId(fragmentId);
@@ -117,7 +118,7 @@ public class MainActivity extends AppCompatActivity
 			fragmentManager.popBackStack();
 		else if (!doubleBackToExitPressedOnce) {
 			this.doubleBackToExitPressedOnce = true;
-			Toast.makeText(this,"Please click BACK again to exit.", Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, R.string.press_back_again, Toast.LENGTH_SHORT).show();
 			new Handler().postDelayed(() -> doubleBackToExitPressedOnce = false, 2000);
 		} else
 			super.onBackPressed();

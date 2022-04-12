@@ -13,18 +13,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.facebook.login.LoginManager;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.switchmaterial.SwitchMaterial;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.talandnoam.fightingrobot.R;
+import com.talandnoam.fightingrobot.classes.LanguageManager;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -40,10 +41,13 @@ public class SettingsFragment extends Fragment
 	// TODO: Rename parameter arguments, choose names that match
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 	private static final SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("MainActivity", Context.MODE_PRIVATE);
+	private static final SharedPreferences.Editor editor = sharedPreferences.edit();
+	private LanguageManager languageManager;
 	private static final String KEY_PRIMARY = "theme", KEY_ITEM = "item",
 			KEY_BACKGROUND = "background", KEY_ITEM_BACKGROUND = "background item",
-			KEY_VIBRATION = "vibration", KEY_SOUND = "sound", KEY_LANGUAGE = "language";
+			KEY_VIBRATION = "vibration", KEY_LANGUAGE = "language", KEY_LANGUAGE_ITEM = "language code";
 	private View rootView;
+	private String[] languages;
 	private Button signOutButton, primaryColorButton, bgChooseButton, languageButton, clearButton;
 	private SwitchMaterial vibrationSwitch;
 	private SwipeRefreshLayout mySwipeRefreshLayout;
@@ -107,10 +111,11 @@ public class SettingsFragment extends Fragment
 
 	private void handleSharedPreferences()
 	{
-		int backgroundColor = sharedPreferences.getInt(KEY_BACKGROUND, R.color.white);
-		rootView.setBackgroundColor(getResources().getColor(backgroundColor,  getResources().newTheme()));
-
+		languageManager = new LanguageManager(requireActivity());
+		int backgroundColor = sharedPreferences.getInt(KEY_BACKGROUND, R.color.black);
+		rootView.setBackgroundColor(requireActivity().getColor(backgroundColor));
 		vibrationState = sharedPreferences.getBoolean(KEY_VIBRATION, false);
+		languageManager.setLanguage(sharedPreferences.getString(KEY_LANGUAGE, "English"));
 	}
 
 	private void setListeners ()
@@ -126,6 +131,40 @@ public class SettingsFragment extends Fragment
 		 * performs a swipe-to-refresh gesture.
 		 */
 		mySwipeRefreshLayout.setOnRefreshListener(this::myUpdateOperation);
+		languageButton.setOnClickListener(this::chooseLanguage);
+	}
+
+	private void chooseLanguage (View view)
+	{
+		vibrate();
+		languages = new String[]{"English", "Hebrew"};
+		int checkedItem = sharedPreferences.getInt(KEY_LANGUAGE_ITEM, 0);
+		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(view.getContext());
+		builder.setTitle(R.string.change_theme_color)
+				.setSingleChoiceItems(languages, checkedItem, (dialogInterface, selectedItem) ->
+						changeLanguage(selectedItem))
+				.setPositiveButton(R.string.ok, (dialogInterface, i) ->
+				{
+					vibrate();
+					refreshActivity();
+				})
+				.setIcon(R.drawable.ic_palette)
+				.setCancelable(true)
+				.show();
+	}
+
+	private void refreshActivity ()
+	{
+		requireActivity().startActivity(requireActivity().getIntent());
+	}
+
+	private void changeLanguage (int selectedItem)
+	{
+		String languageCode = languages[selectedItem];
+		languageManager.setLanguage(languageCode);
+		editor.putString(KEY_LANGUAGE, languageCode);
+		editor.putInt(KEY_LANGUAGE_ITEM, selectedItem);
+		editor.apply();
 	}
 
 	private void getViews ()
@@ -133,7 +172,7 @@ public class SettingsFragment extends Fragment
 		signOutButton = rootView.findViewById(R.id.sign_out);
 		primaryColorButton = rootView.findViewById(R.id.color_chooser);
 		bgChooseButton = rootView.findViewById(R.id.bg_chooser);
-		languageButton = rootView.findViewById(R.id.language_chooser); // TODO: Add language chooser
+		languageButton = rootView.findViewById(R.id.language_chooser);
 		clearButton = rootView.findViewById(R.id.clear_data_button);
 		vibrationSwitch = rootView.findViewById(R.id.vibe_chooser);
 		mySwipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh_layout);
@@ -141,19 +180,15 @@ public class SettingsFragment extends Fragment
 
 	private void switchVibrationMode (View rootView, SwitchMaterial vibrationSwitch)
 	{
-		Snackbar.make(rootView, "Vibration is " + (vibrationSwitch.isChecked() ? "On" : "Off"), Snackbar.LENGTH_SHORT)
-				.setAnchorView(R.id.bottom_navigation)
+		Toast.makeText(rootView.getContext(), getString(R.string.vibe_is) + " " + (vibrationSwitch.isChecked() ? getString(R.string.on) : getString(R.string.off)), Toast.LENGTH_SHORT)
 				.show();
-		final SharedPreferences.Editor editor = sharedPreferences.edit();
-		editor.putBoolean(KEY_VIBRATION, vibrationSwitch.isChecked());
-		editor.apply();
+		editor.putBoolean(KEY_VIBRATION, vibrationSwitch.isChecked()).apply();
 		requireActivity().recreate();
 	}
 
 	private void myUpdateOperation ()
 	{
 		Log.d(TAG, "myUpdateOperation: ");
-		requireActivity().recreate();
 		mySwipeRefreshLayout.setRefreshing(false);
 	}
 
@@ -161,17 +196,17 @@ public class SettingsFragment extends Fragment
 	{
 		vibrate();
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(view.getContext());
-		builder.setTitle("Clear Data")
-				.setMessage("Are you sure you want to clear all data?\nThis action cannot be undone.\n\nThis will also clear your saved matches history.")
-				.setPositiveButton("ok", (dialogInterface, i) ->
+		builder.setTitle(R.string.clear_data)
+				.setMessage(R.string.are_you_sure)
+				.setPositiveButton(R.string.ok, (dialogInterface, i) ->
 				{
 					vibrate();
-					sharedPreferences.edit().clear().apply();
+					editor.clear().apply();
 					DatabaseReference myRef1 = firebaseDatabase.getReference("users/" + mAuth.getUid() + "/match_history");
 					myRef1.removeValue();
-					requireActivity().recreate();
+					refreshActivity();
 				})
-				.setNegativeButton("cancel", (dialogInterface, i) ->{})
+				.setNegativeButton(R.string.cancel, (dialogInterface, i) -> {})
 				.setIcon(R.drawable.ic_palette)
 				.setCancelable(true)
 				.show();
@@ -186,15 +221,13 @@ public class SettingsFragment extends Fragment
 	private void chooseBackgroundColor (View view)
 	{
 		vibrate();
-		String[] colors = {"white", "black", "gray",
-				"light blue", "light red", "light green", "light yellow", "light purple",
-				"dark blue", "dark red", "dark green", "dark yellow", "dark purple"};
+		String[] colors = getResources().getStringArray(R.array.colors);
 		int checkedItem = sharedPreferences.getInt(KEY_ITEM_BACKGROUND, 1);
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(view.getContext());
-		builder.setTitle("Change Background Color")
+		builder.setTitle(R.string.change_bg_color)
 				.setSingleChoiceItems(colors, checkedItem, (dialogInterface, selectedItem) ->
 						changeBackgroundColor(selectedItem))
-				.setPositiveButton("ok", (dialogInterface, i) ->
+				.setPositiveButton(R.string.ok, (dialogInterface, i) ->
 				{
 					vibrate();
 					requireActivity().recreate();
@@ -207,7 +240,6 @@ public class SettingsFragment extends Fragment
 	private void changeBackgroundColor (int selectedColor)
 	{
 		vibrate();
-		final SharedPreferences.Editor editor = sharedPreferences.edit();
 		int backgroundId = getBackgroundColor(selectedColor);
 		editor.putInt(KEY_ITEM_BACKGROUND, selectedColor);
 		editor.putInt(KEY_BACKGROUND, backgroundId);
@@ -250,7 +282,6 @@ public class SettingsFragment extends Fragment
 
 	private void changePrimaryColor (int selectedColor)
 	{
-		final SharedPreferences.Editor editor = sharedPreferences.edit();
 		vibrate();
 		Resources.Theme theme = requireContext().getTheme();
 		int themeId = getThemeId(selectedColor);
@@ -284,13 +315,12 @@ public class SettingsFragment extends Fragment
 		String[] colors = {"blue", "red", "green", "yellow", "purple"};
 		int checkedItem = sharedPreferences.getInt(KEY_ITEM, 4);
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(view.getContext());
-		builder.setTitle("Change Theme Color")
+		builder.setTitle(R.string.change_theme_color)
 				.setSingleChoiceItems(colors, checkedItem, (dialogInterface, selectedItem) ->
 						changePrimaryColor(selectedItem))
 				.setPositiveButton("ok", (dialogInterface, i) ->
 				{
-					if (sharedPreferences.getBoolean(KEY_VIBRATION, false))
-						vibe.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE));
+					vibrate();
 					requireActivity().recreate();
 				})
 				.setIcon(R.drawable.ic_palette)
@@ -302,13 +332,10 @@ public class SettingsFragment extends Fragment
 	{
 		vibrate();
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(view.getContext());
-		builder.setTitle("confirm logout")
-				.setMessage("are you sure you want to logout?")
-				.setPositiveButton("yes", (dialogInterface, i) -> logout())
-				.setNegativeButton("cancel",(dialogInterface, i) -> {
-					if (sharedPreferences.getBoolean(KEY_VIBRATION, false))
-						vibe.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE));
-				})
+		builder.setTitle(R.string.confirm_logout)
+				.setMessage(R.string.logout_confirm)
+				.setPositiveButton(R.string.yes, (dialogInterface, i) -> logout())
+				.setNegativeButton(R.string.cancel,(dialogInterface, i) -> vibrate())
 				.setIcon(R.drawable.ic_logout)
 				.setCancelable(true)
 				.show();

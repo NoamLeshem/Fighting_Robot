@@ -46,6 +46,7 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.talandnoam.fightingrobot.R;
+import com.talandnoam.fightingrobot.classes.LanguageManager;
 import com.talandnoam.fightingrobot.classes.TextValidator;
 
 import java.util.Arrays;
@@ -60,7 +61,6 @@ public class LoginActivity extends Activity
 	private TextInputLayout emailInputLayout, passwordInputLayout;
 	boolean isEmailValid = false, isPasswordValid = false;
 	private LinearProgressIndicator progressIndicator;
-	private SharedPreferences sharedPreferences;
 	private static final int RC_SIGN_IN = 9001;
 	private FirebaseDatabase firebaseDatabase;
 	private EditText userEmail, userPassword;
@@ -82,9 +82,7 @@ public class LoginActivity extends Activity
 		// Check if user is signed in (non-null) and update UI accordingly.
 		FirebaseUser currentUser = mAuth.getCurrentUser();
 		if (currentUser != null)
-		{
 			activityLauncher(toMainActivity);
-		}
 	}
 
 	@Override
@@ -92,28 +90,36 @@ public class LoginActivity extends Activity
 	{
 		// Handle the splash screen transition.
 		SplashScreen splashScreen = SplashScreen.installSplashScreen(this);
+		splashScreen.setKeepOnScreenCondition(() ->
+		{
+			// Keep the splash screen on as long as the user is not interacting with the app.
+			return false;
+		});
 
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_login);
 
-		getComponents();
+		getViews();
+		initVariables();
 		initializeFirebase();
 		handleSharedPreferences();
 		setListeners();
 	}
 
-	private void getComponents ()
+	private void initVariables ()
 	{
-		sharedPreferences = this.getSharedPreferences("MainActivity", Context.MODE_PRIVATE);
-		vibrationState = sharedPreferences.getBoolean(KEY_VIBRATION, false);
 		toMainActivity = new Intent(this, MainActivity.class);
 		vibe = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
+		callbackManager = CallbackManager.Factory.create();
+	}
+
+	private void getViews ()
+	{
 		progressIndicator = findViewById(R.id.linearProgressIndicator);
 		emailPassLogin = findViewById(R.id.user_and_password_login);
 		passwordInputLayout = findViewById(R.id.textInputLayout1);
 		emailInputLayout = findViewById(R.id.textInputLayout);
 		loginWithFacebook = findViewById(R.id.login_button);
-		callbackManager = CallbackManager.Factory.create();
 		toSignUpActivity = findViewById(R.id.new_account);
 		helpPassword = findViewById(R.id.help_password);
 		showPassword = findViewById(R.id.show_password);
@@ -131,8 +137,12 @@ public class LoginActivity extends Activity
 
 	private void handleSharedPreferences ()
 	{
-		int backgroundColor = sharedPreferences.getInt(KEY_BACKGROUND, R.color.white);
-		findViewById(R.id.activity_login).setBackgroundColor(getResources().getColor(backgroundColor, getResources().newTheme()));
+		SharedPreferences sharedPreferences = this.getSharedPreferences("MainActivity", Context.MODE_PRIVATE);
+		vibrationState = sharedPreferences.getBoolean(KEY_VIBRATION, false);
+		int backgroundColor = sharedPreferences.getInt(KEY_BACKGROUND, R.color.black);
+		findViewById(R.id.activity_login).setBackgroundColor(getColor(backgroundColor));
+		LanguageManager languageManager = new LanguageManager(this);
+		languageManager.setLanguage(sharedPreferences.getString("language", "en"));
 	}
 
 	private void setListeners ()
@@ -313,7 +323,6 @@ public class LoginActivity extends Activity
 			{
 				// Google Sign In was successful, authenticate with Firebase
 				GoogleSignInAccount account = task.getResult(ApiException.class);
-				Log.d(TAG, "firebaseAuthWithGoogle:" + account.getId());
 				firebaseAuthWithGoogle(account.getIdToken());
 			}
 			catch (ApiException e)
@@ -337,7 +346,7 @@ public class LoginActivity extends Activity
 	private void handleTaskResult (Task<AuthResult> task)
 	{
 		if (task.isSuccessful()) // Sign in success, update UI with the signed-in user's information
-			updateUI();
+			updateUI(mAuth.getCurrentUser());
 		else
 		{
 			// If sign in fails, display a message to the user.
@@ -347,19 +356,17 @@ public class LoginActivity extends Activity
 			if (Objects.requireNonNull(Objects.requireNonNull(task.getException())
 					.getMessage())
 					.equals("The password is invalid or the user does not have a password."))
-				Snackbar.make(emailPassLogin, "Wrong password", Snackbar.LENGTH_LONG)
-						.setAction("clear",view -> userPassword.setText(""))
+				Snackbar.make(emailPassLogin, R.string.wrong_password, Snackbar.LENGTH_LONG)
+						.setAction(R.string.clear, view -> userPassword.setText(""))
 						.show();
 			emailPassLogin.setEnabled(true);
 		}
 	}
 
-	private void updateUI ()
+	private void updateUI (FirebaseUser user)
 	{
-		FirebaseUser user = mAuth.getCurrentUser();
-		if (user != null) sendUserData(user);
 		progressIndicator.setVisibility(View.GONE);
-		activityLauncher(toMainActivity);
+		if (user != null) sendUserData(user);
 	}
 
 	private void activityLauncher (Intent intent)
@@ -371,10 +378,11 @@ public class LoginActivity extends Activity
 
 	private void sendUserData (FirebaseUser user)
 	{
-		DatabaseReference myRef2 = myRef1.child(Objects.requireNonNull(user.getUid()));
+		DatabaseReference myRef2 = myRef1.child(user.getUid());
 		DatabaseReference myRef3 = firebaseDatabase.getReference("processor/currentUser");
 		DatabaseReference myRef4 = myRef2.child("email");
 		myRef4.setValue(user.getEmail());
 		myRef3.setValue(user.getUid());
+		activityLauncher(toMainActivity);
 	}
 }

@@ -56,8 +56,8 @@ public class FightActivity extends AppCompatActivity
 	private void handleSharedPreferences ()
 	{
 		SharedPreferences sharedPreferences = this.getSharedPreferences("MainActivity", Context.MODE_PRIVATE);
-		int backgroundColor = sharedPreferences.getInt(KEY_BACKGROUND, R.color.white);
-		findViewById(R.id.activity_fight).setBackgroundColor(getResources().getColor(backgroundColor, getResources().newTheme()));
+		int backgroundColor = sharedPreferences.getInt(KEY_BACKGROUND, R.color.black);
+		findViewById(R.id.activity_fight).setBackgroundColor(getColor(backgroundColor));
 	}
 
 	@SuppressLint("ClickableViewAccessibility")
@@ -71,9 +71,9 @@ public class FightActivity extends AppCompatActivity
 				if (score == 10)
 				{
 					MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(FightActivity.this);
-					builder.setTitle("You lost!")
-							.setMessage("You lost the match! hahaha Loser cry about it:D")
-							.setNegativeButton("ok", (dialogInterface, i) ->
+					builder.setTitle(R.string.you_lost)
+							.setMessage(R.string.lose_messege)
+							.setNegativeButton(R.string.ok, (dialogInterface, i) ->
 							{
 								startActivity(new Intent(FightActivity.this, MainActivity.class));
 								finish();
@@ -98,8 +98,8 @@ public class FightActivity extends AppCompatActivity
 
 		joystickRight.setOnMoveListener((angle, strength) ->
 		{
-			double x = Math.cos(Math.toRadians(angle)) * (strength * 0.9);
-			double y = Math.sin(Math.toRadians(angle)) * (strength * 0.9);
+			double x = Math.cos(Math.toRadians(angle)) * (strength * 0.9) + 90;
+			double y = Math.sin(Math.toRadians(angle)) * (strength * 0.9) + 90;
 			myRef4.setValue((int) x);
 			myRef5.setValue((int) y);
 		});
