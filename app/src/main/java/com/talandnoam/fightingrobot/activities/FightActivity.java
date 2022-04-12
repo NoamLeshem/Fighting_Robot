@@ -105,7 +105,7 @@ public class FightActivity extends AppCompatActivity
 			myRef5.setValue((int) y);
 		});
 		webView.setWebViewClient(new WebViewClient());
-		webView.loadUrl("http://192.168.1.27:8000/index.html");
+		webView.loadUrl("http://192.168.1.27:8000/index.html"); // TODO: make it work correctly
 	}
 
 	private void setMatchScore ()
@@ -119,7 +119,7 @@ public class FightActivity extends AppCompatActivity
 
 			@Override
 			public void onCancelled (@NonNull DatabaseError error)
-			{ Log.d(TAG, "onCancelled:     " + error.getMessage()); }
+			{ Log.d(TAG, "onCancelled: " + error.getMessage()); }
 		});
 	}
 

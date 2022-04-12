@@ -50,7 +50,7 @@
     <string name="match_format">match format</string>
     <string name="team_name">team name</string>
     <string name="placeholder" translatable="false">placeholder</string>
-    <string name="match_details">match details</string>
+    <string name="match_details">Details</string>
     <string name="todo" translatable="false">TODO</string>
     <string name="choose_the_fight_rules">choose the fight rules</string>
     <string name="tilt_your_phone_nthe_next_screen_is_horizontal_nrotate_your_phone_for_proper_use">Tilt your phone. The next screen is horizontal rotate your phone for proper use</string>

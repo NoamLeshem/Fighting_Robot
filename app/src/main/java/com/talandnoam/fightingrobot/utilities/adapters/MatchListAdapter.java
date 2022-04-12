@@ -105,7 +105,7 @@ public class MatchListAdapter extends ArrayAdapter<Match>
 	private void findViews (View convertView)
 	{
 		headerTextView = convertView.findViewById(R.id.heading);
-		matchId = convertView.findViewById(R.id.match_id);
+		// matchId = convertView.findViewById(R.id.match_id);
 		matchWinner = convertView.findViewById(R.id.match_winner);
 		matchDate = convertView.findViewById(R.id.match_date);
 		matchTime = convertView.findViewById(R.id.match_time);
@@ -117,12 +117,12 @@ public class MatchListAdapter extends ArrayAdapter<Match>
 	private void setValues (int position, Match match)
 	{
 		headerTextView.setText("Match #" + (position + 1));
-		matchId.setText("Match ID: " + match.getMatchId());
-		matchWinner.setText("Match Winner: " + match.getMatchWinner());
-		matchDate.setText("Match Date: " + match.getMatchDate());
-		matchTime.setText("Match Time: " + match.getMatchTime());
-		matchType.setText("Match Type: " + match.getMatchType());
-		matchFormat.setText("Match Format: " + match.getMatchFormat());
-		matchResult.setText("Match Result: " + match.getMatchResult());
+		// matchId.setText("ID: " + match.getMatchId());
+		matchWinner.setText(match.getMatchWinner());
+		matchDate.setText(match.getMatchDate());
+		matchTime.setText(match.getMatchTime());
+		matchType.setText(match.getMatchType());
+		matchFormat.setText(match.getMatchFormat());
+		matchResult.setText(match.getMatchResult());
 	}
 }
