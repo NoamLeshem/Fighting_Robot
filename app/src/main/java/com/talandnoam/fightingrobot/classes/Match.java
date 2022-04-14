@@ -4,115 +4,115 @@ import androidx.annotation.NonNull;
 
 public class Match
 {
-	private String matchId, matchWinner, matchDate, matchTime, matchType, matchFormat, matchResult, matchRoundsCap;
+	private String id, winner, date, time, type, format, result, roundsCap;
 
 	public Match()
 	{
 		// TODO Auto-generated constructor stub
 	}
 
-	public Match(String matchId, String matchWinner, String matchDate, String matchTime, String matchType, String matchFormat, String matchResult, String matchRoundsCap)
+	public Match(String id, String winner, String date, String time, String type, String format, String result, String roundsCap)
 	{
-		this.setMatchRoundsCap(matchRoundsCap);
-		this.setMatchWinner(matchWinner);
-		this.setMatchFormat(matchFormat);
-		this.setMatchResult(matchResult);
-		this.setMatchDate(matchDate);
-		this.setMatchTime(matchTime);
-		this.setMatchType(matchType);
-		this.setMatchId(matchId);
+		this.setRoundsCap(roundsCap);
+		this.setWinner(winner);
+		this.setFormat(format);
+		this.setResult(result);
+		this.setDate(date);
+		this.setTime(time);
+		this.setType(type);
+		this.setId(id);
 	}
 
-	public String getMatchRoundsCap()
+	public String getRoundsCap ()
 	{
-		return matchRoundsCap;
+		return roundsCap;
 	}
 
-	private void setMatchRoundsCap (String matchRoundsCap)
+	private void setRoundsCap (String roundsCap)
 	{
-		this.matchRoundsCap = matchRoundsCap;
+		this.roundsCap = roundsCap;
 	}
 
-	public String getMatchId()
+	public String getId ()
 	{
-		return this.matchId;
+		return this.id;
 	}
 
-	public void setMatchId(String matchId)
+	public void setId (String id)
 	{
-		this.matchId = matchId;
+		this.id = id;
 	}
 
-	public String getMatchWinner()
+	public String getWinner ()
 	{
-		return this.matchWinner;
+		return this.winner;
 	}
 
-	public void setMatchWinner(String matchWinner)
+	public void setWinner (String winner)
 	{
-		this.matchWinner = matchWinner;
+		this.winner = winner;
 	}
 
-	public String getMatchDate()
+	public String getDate ()
 	{
-		return this.matchDate;
+		return this.date;
 	}
 
-	public void setMatchDate(String matchDate)
+	public void setDate (String date)
 	{
-		this.matchDate = matchDate;
+		this.date = date;
 	}
 
-	public String getMatchTime()
+	public String getTime ()
 	{
-		return this.matchTime;
+		return this.time;
 	}
 
-	public void setMatchTime(String matchTime)
+	public void setTime (String time)
 	{
-		this.matchTime = matchTime;
+		this.time = time;
 	}
 
-	public String getMatchType()
+	public String getType ()
 	{
-		return this.matchType;
+		return this.type;
 	}
 
-	public void setMatchType(String matchType)
+	public void setType (String type)
 	{
-		this.matchType = matchType;
+		this.type = type;
 	}
 
-	public String getMatchFormat()
+	public String getFormat ()
 	{
-		return this.matchFormat;
+		return this.format;
 	}
 
-	public void setMatchFormat(String matchFormat)
+	public void setFormat (String format)
 	{
-		this.matchFormat = matchFormat;
+		this.format = format;
 	}
 
-	public String getMatchResult()
+	public String getResult ()
 	{
-		return this.matchResult;
+		return this.result;
 	}
 
-	public void setMatchResult(String matchResult)
+	public void setResult (String result)
 	{
-		this.matchResult = matchResult;
+		this.result = result;
 	}
 
 	@NonNull
 	public String toString()
 	{
-		return "Match ID: " + matchId + "\n" +
-				"Winner: " + matchWinner + "\n" +
-				"Date: " + matchDate + "\n" +
-				"Time: " + matchTime + "\n" +
-				"Type: " + matchType + "\n" +
-				"Format: " + matchFormat + "\n" +
-				"Result: " + matchResult + "\n" +
-				"Rounds Cap: " + matchRoundsCap;
+		return "Match ID: " + id + "\n" +
+				"Winner: " + winner + "\n" +
+				"Date: " + date + "\n" +
+				"Time: " + time + "\n" +
+				"Type: " + type + "\n" +
+				"Format: " + format + "\n" +
+				"Result: " + result + "\n" +
+				"Rounds Cap: " + roundsCap;
 	}
 }

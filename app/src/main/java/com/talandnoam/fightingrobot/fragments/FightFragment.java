@@ -34,6 +34,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.google.gson.Gson;
 import com.talandnoam.fightingrobot.R;
 import com.talandnoam.fightingrobot.activities.FightActivity;
 import com.talandnoam.fightingrobot.classes.BetterActivityResult;
@@ -290,19 +291,20 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 		String formattedDate = myDateObj.format(myFormatDateObj);
 		String formattedTime = myDateObj.format(myFormatTimeObj);
 		uploadMatchImage();
-		myRef2.setValue(new Match(
-				myRef2.getKey(),
+		Match match = new Match(
+				matchId,
 				"we",
 				formattedDate,
 				formattedTime,
 				type,
 				format + " " + length,
 				"0-0",
-				length));
+				length);
+		myRef2.setValue(match);
 		Intent intent = new Intent(getContext(), FightActivity.class);
-		intent.putExtra("matchID", myRef2.getKey());
-		intent.putExtra("matchFormat", type + " " + format + " " + length);
-		intent.putExtra("userID", mAuth.getUid());
+		Gson gson = new Gson();
+		String json = gson.toJson(match);
+		intent.putExtra("match", json);
 		startActivity(intent);
 	}
 }

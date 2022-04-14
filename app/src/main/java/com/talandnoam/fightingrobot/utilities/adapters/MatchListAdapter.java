@@ -63,8 +63,8 @@ public class MatchListAdapter extends ArrayAdapter<Match>
 		ImageView matchImage = convertView.findViewById(R.id.icon);
 		cardView.setOnClickListener(view -> handleExpandAndCollapse(cardView, arrow, hiddenView));
 		arrow.setOnClickListener(view -> handleExpandAndCollapse(cardView, arrow, hiddenView));
-		Log.d(TAG, "getView: " + match.getMatchId());
-		StorageReference imageReference = FirebaseStorage.getInstance().getReference("users/" + mAuth.getUid() + "/matches/" + match.getMatchId());
+		Log.d(TAG, "getView: " + match.getId());
+		StorageReference imageReference = FirebaseStorage.getInstance().getReference("users/" + mAuth.getUid() + "/matches/" + match.getId());
 		View finalConvertView = convertView;
 		imageReference.getDownloadUrl()
 				.addOnSuccessListener(uri ->
@@ -117,12 +117,12 @@ public class MatchListAdapter extends ArrayAdapter<Match>
 	private void setValues (int position, Match match)
 	{
 		headerTextView.setText("Match #" + (position + 1));
-		// matchId.setText("ID: " + match.getMatchId());
-		matchWinner.setText(match.getMatchWinner());
-		matchDate.setText(match.getMatchDate());
-		matchTime.setText(match.getMatchTime());
-		matchType.setText(match.getMatchType());
-		matchFormat.setText(match.getMatchFormat());
-		matchResult.setText(match.getMatchResult());
+		// matchId.setText("ID: " + match.getId());
+		matchWinner.setText(match.getWinner());
+		matchDate.setText(match.getDate());
+		matchTime.setText(match.getTime());
+		matchType.setText(match.getType());
+		matchFormat.setText(match.getFormat());
+		matchResult.setText(match.getResult());
 	}
 }

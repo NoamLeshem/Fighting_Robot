@@ -16,12 +16,15 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.gson.Gson;
 import com.talandnoam.fightingrobot.R;
+import com.talandnoam.fightingrobot.classes.Match;
 
 import java.util.Objects;
 
@@ -29,15 +32,16 @@ import io.github.controlwear.virtual.joystick.android.JoystickView;
 
 public class FightActivity extends AppCompatActivity
 {
-	private DatabaseReference myRef2, myRef3, myRef4, myRef5, myRef6;
 	private final FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
 	private static final String KEY_BACKGROUND = "background", TAG = "FightActivity";
-	private WebView webView;
+	private DatabaseReference myRef2, myRef3, myRef4, myRef5, myRef6;
 	private JoystickView joystickLeft, joystickRight;
-	private String matchIDString, userIDString;
 	private TextView matchFormat, matchScore;
 	private DatabaseReference hitRef;
 	private Button shootButton;
+	private FirebaseAuth mAuth;
+	private WebView webView;
+	private Match match;
 	private int score;
 
 	@SuppressLint("ClickableViewAccessibility")
@@ -66,12 +70,13 @@ public class FightActivity extends AppCompatActivity
 	@SuppressLint("ClickableViewAccessibility")
 	private void setListeners ()
 	{
-		hitRef.addValueEventListener(new ValueEventListener(){
+		hitRef.addValueEventListener(new ValueEventListener()
+		{
 			@Override
 			public void onDataChange (@NonNull DataSnapshot snapshot)
 			{
 				score += snapshot.getValue(Boolean.class) ? 1 : 0;
-				if (score == 10)
+				if (score == Integer.parseInt(match.getRoundsCap()))
 				{
 					MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(FightActivity.this);
 					builder.setTitle(R.string.you_lost)
@@ -81,10 +86,10 @@ public class FightActivity extends AppCompatActivity
 								startActivity(new Intent(FightActivity.this, MainActivity.class));
 								finish();
 							})
-							.setCancelable(true)
+							.setCancelable(false)
 							.show();
 				}
-				matchScore.setText(score + " / 10");
+				matchScore.setText(score + " / " + match.getRoundsCap());
 			}
 
 			@Override
@@ -110,7 +115,7 @@ public class FightActivity extends AppCompatActivity
 
 	private void setMatchScore ()
 	{
-		DatabaseReference myRef = firebaseDatabase.getReference("users/" + userIDString + "/match_history/" + matchIDString + "/matchResult");
+		DatabaseReference myRef = firebaseDatabase.getReference("users/" + mAuth.getUid() + "/match_history/" + match.getId() + "/matchResult");
 		myRef.addValueEventListener(new ValueEventListener()
 		{
 			@Override
@@ -126,10 +131,10 @@ public class FightActivity extends AppCompatActivity
 	private void extractDataFromIntent ()
 	{
 		Intent intent = getIntent();
-		String matchFormatString = intent.getStringExtra("matchFormat");
-		matchIDString = intent.getStringExtra("matchID");
-		userIDString = intent.getStringExtra("userID");
-		matchFormat.setText(matchFormatString);
+		Gson gson = new Gson();
+		String json = intent.getStringExtra("match");
+		match = gson.fromJson(json, Match.class);
+		matchFormat.setText(match.getFormat());
 	}
 
 	private boolean sendToFirebaseWhilePressed (MotionEvent event)
@@ -158,6 +163,7 @@ public class FightActivity extends AppCompatActivity
 
 	private void initializeFirebaseDirectory ()
 	{
+		mAuth = FirebaseAuth.getInstance();
 		hitRef = firebaseDatabase.getReference("processor/isHit");
 		DatabaseReference myRef1 = firebaseDatabase.getReference("processor/controller");
 		myRef2 = myRef1.child("leftStick/angle");
