@@ -1,9 +1,7 @@
 package com.talandnoam.fightingrobot.activities;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -15,16 +13,15 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.talandnoam.fightingrobot.R;
+import com.talandnoam.fightingrobot.classes.FirebaseManager;
 import com.talandnoam.fightingrobot.classes.Match;
+import com.talandnoam.fightingrobot.classes.PrefsManager;
 
 import java.util.Objects;
 
@@ -32,17 +29,15 @@ import io.github.controlwear.virtual.joystick.android.JoystickView;
 
 public class FightActivity extends AppCompatActivity
 {
-	private final FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-	private static final String KEY_BACKGROUND = "background", TAG = "FightActivity";
-	private DatabaseReference myRef2, myRef3, myRef4, myRef5, myRef6;
+	private DatabaseReference myRef2, myRef3, myRef4, myRef5, myRef6, hitRef;
+	private static final String TAG = "FightActivity";
 	private JoystickView joystickLeft, joystickRight;
-	private TextView matchFormat, matchScore;
-	private DatabaseReference hitRef;
+	public static TextView matchScore;
+	public TextView matchFormat;
 	private Button shootButton;
-	private FirebaseAuth mAuth;
+	public static Match match;
 	private WebView webView;
-	private Match match;
-	private int score;
+	public static int score;
 
 	@SuppressLint("ClickableViewAccessibility")
 	@Override
@@ -60,43 +55,73 @@ public class FightActivity extends AppCompatActivity
 		setListeners();
 	}
 
+	private void getViews ()
+	{
+		webView = findViewById(R.id.web_view);
+		joystickLeft = findViewById(R.id.joystick_left);
+		joystickRight = findViewById(R.id.joystick_right);
+		shootButton = findViewById(R.id.shoot_button);
+		matchFormat = findViewById(R.id.foramt);
+		matchScore = findViewById(R.id.score);
+	}
+
+	private void extractDataFromIntent ()
+	{
+		Intent intent = getIntent();
+		Gson gson = new Gson();
+		String json = intent.getStringExtra("match");
+		match = gson.fromJson(json, Match.class);
+		matchFormat.setText(match.getFormat());
+	}
+
 	private void handleSharedPreferences ()
 	{
-		SharedPreferences sharedPreferences = this.getSharedPreferences("MainActivity", Context.MODE_PRIVATE);
-		int backgroundColor = sharedPreferences.getInt(KEY_BACKGROUND, R.color.black);
+		PrefsManager prefsManager = new PrefsManager(this);
+		int backgroundColor = prefsManager.getPrefInt(PrefsManager.KEY_BACKGROUND, R.color.black);
 		findViewById(R.id.activity_fight).setBackgroundColor(getColor(backgroundColor));
+	}
+
+	private void initializeFirebaseDirectory ()
+	{
+		hitRef = FirebaseManager.getDataRef("processor/isHit");
+		DatabaseReference myRef1 = FirebaseManager.getDataRef("processor/controller");
+		myRef2 = myRef1.child("leftStick/angle");
+		myRef3 = myRef1.child("leftStick/strength");
+		myRef4 = myRef1.child("rightStick/x");
+		myRef5 = myRef1.child("rightStick/y");
+		myRef6 = FirebaseManager.getDataRef("processor/laserEmitter");
+	}
+
+	private void setMatchScore ()
+	{
+		DatabaseReference myRef = FirebaseManager.getDataRef("users/" + FirebaseManager.getUid() + "/match_history/" + match.getId() + "/matchResult");
+		myRef.addValueEventListener(new ValueEventListener()
+		{
+			@Override
+			public void onDataChange (@NonNull DataSnapshot snapshot)
+			{ matchScore.setText(snapshot.getValue(String.class)); }
+
+			@Override
+			public void onCancelled (@NonNull DatabaseError error)
+			{ Log.d(TAG, "onCancelled: " + error.getMessage()); }
+		});
 	}
 
 	@SuppressLint("ClickableViewAccessibility")
 	private void setListeners ()
 	{
-		hitRef.addValueEventListener(new ValueEventListener()
-		{
-			@Override
-			public void onDataChange (@NonNull DataSnapshot snapshot)
-			{
-				score += snapshot.getValue(Boolean.class) ? 1 : 0;
-				if (score == Integer.parseInt(match.getRoundsCap()))
-				{
-					MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(FightActivity.this);
-					builder.setTitle(R.string.you_lost)
-							.setMessage(R.string.lose_messege)
-							.setNegativeButton(R.string.ok, (dialogInterface, i) ->
-							{
-								startActivity(new Intent(FightActivity.this, MainActivity.class));
-								finish();
-							})
-							.setCancelable(false)
-							.show();
-				}
-				matchScore.setText(score + " / " + match.getRoundsCap());
-			}
-
-			@Override
-			public void onCancelled (@NonNull DatabaseError error)
-			{ Log.d(TAG, "onCancelled:     " + error.getMessage()); }
-		});
-		shootButton.setOnTouchListener((v, event) -> FightActivity.this.sendToFirebaseWhilePressed(event));
+//		hitRef.addValueEventListener(new ValueEventListener()
+//		{
+//			@Override
+//			public void onDataChange (@NonNull DataSnapshot snapshot)
+//			{ handleHitEvent(snapshot); }
+//
+//			@Override
+//			public void onCancelled (@NonNull DatabaseError error)
+//			{ Log.d(TAG, "onCancelled:     " + error.getMessage()); }
+//		});
+		shootButton.setOnTouchListener((v, event) ->
+				FightActivity.this.sendToFirebaseWhilePressed(event));
 		joystickLeft.setOnMoveListener((angle, strength) ->
 		{
 			myRef2.setValue(angle);
@@ -113,29 +138,27 @@ public class FightActivity extends AppCompatActivity
 		webView.loadUrl("http://192.168.1.27:8000/index.html"); // TODO: make it work correctly
 	}
 
-	private void setMatchScore ()
-	{
-		DatabaseReference myRef = firebaseDatabase.getReference("users/" + mAuth.getUid() + "/match_history/" + match.getId() + "/matchResult");
-		myRef.addValueEventListener(new ValueEventListener()
-		{
-			@Override
-			public void onDataChange (@NonNull DataSnapshot snapshot)
-			{ matchScore.setText(snapshot.getValue(String.class)); }
+//	public void handleHitEvent (Context context, @NonNull DataSnapshot snapshot)
+//	{
+//		score += snapshot.getValue(Boolean.class) ? 1 : 0;
+//		if (score == Integer.parseInt(match.getRoundsCap()))
+//		{
+//			notifyLostMessage(context);
+//		}
+//		matchScore.setText(score + " / " + match.getRoundsCap());
+//	}
 
-			@Override
-			public void onCancelled (@NonNull DatabaseError error)
-			{ Log.d(TAG, "onCancelled: " + error.getMessage()); }
-		});
-	}
-
-	private void extractDataFromIntent ()
-	{
-		Intent intent = getIntent();
-		Gson gson = new Gson();
-		String json = intent.getStringExtra("match");
-		match = gson.fromJson(json, Match.class);
-		matchFormat.setText(match.getFormat());
-	}
+//	private void notifyLostMessage (Context context)
+//	{
+//		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
+//		builder.setTitle(R.string.you_lost)
+//				.setMessage(R.string.lose_messege)
+//				.setNegativeButton(R.string.ok, (dialogInterface, i) ->
+//						Commons.activityLauncher(this, new Intent(context, MainActivity.class)))
+//				.setCancelable(false)
+//				.show();
+//		NotificationHelper.createNotification("You lost\nYou lost the match", context);
+//	}
 
 	private boolean sendToFirebaseWhilePressed (MotionEvent event)
 	{
@@ -150,28 +173,4 @@ public class FightActivity extends AppCompatActivity
 		}
 		return false;
 	}
-
-	private void getViews ()
-	{
-		webView = findViewById(R.id.web_view);
-		joystickLeft = findViewById(R.id.joystick_left);
-		joystickRight = findViewById(R.id.joystick_right);
-		shootButton = findViewById(R.id.shoot_button);
-		matchFormat = findViewById(R.id.foramt);
-		matchScore = findViewById(R.id.score);
-	}
-
-	private void initializeFirebaseDirectory ()
-	{
-		mAuth = FirebaseAuth.getInstance();
-		hitRef = firebaseDatabase.getReference("processor/isHit");
-		DatabaseReference myRef1 = firebaseDatabase.getReference("processor/controller");
-		myRef2 = myRef1.child("leftStick/angle");
-		myRef3 = myRef1.child("leftStick/strength");
-		myRef4 = myRef1.child("rightStick/x");
-		myRef5 = myRef1.child("rightStick/y");
-		myRef6 = firebaseDatabase.getReference("processor/laserEmitter");
-	}
-
-
 }

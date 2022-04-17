@@ -4,6 +4,7 @@
     package="com.talandnoam.fightingrobot">
 
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <queries>
         <provider
@@ -37,6 +38,10 @@
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
+
+        <service
+            android:name=".utilities.services.BackgroundService"
+            android:exported="false"/>
 
         <activity
             android:name="com.facebook.FacebookActivity"

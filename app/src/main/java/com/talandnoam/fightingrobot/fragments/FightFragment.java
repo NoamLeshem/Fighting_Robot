@@ -1,16 +1,10 @@
 package com.talandnoam.fightingrobot.fragments;
 
-import static com.facebook.FacebookSdk.getApplicationContext;
-
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.VibrationEffect;
-import android.os.Vibrator;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,25 +14,26 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResult;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.google.gson.Gson;
 import com.talandnoam.fightingrobot.R;
 import com.talandnoam.fightingrobot.activities.FightActivity;
 import com.talandnoam.fightingrobot.classes.BetterActivityResult;
+import com.talandnoam.fightingrobot.classes.Commons;
+import com.talandnoam.fightingrobot.classes.FirebaseManager;
 import com.talandnoam.fightingrobot.classes.Match;
+import com.talandnoam.fightingrobot.classes.PrefsManager;
+import com.talandnoam.fightingrobot.utilities.services.BackgroundService;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -53,30 +48,25 @@ import java.util.Objects;
  */
 public class FightFragment extends Fragment // implements IOnBackPressed
 {
-	private static final SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("MainActivity", Context.MODE_PRIVATE);
 	private static final String TAG = "FightFragment";
 	protected final BetterActivityResult<Intent, ActivityResult> activityLauncher = BetterActivityResult.registerActivityForResult(this);
-	private static final String KEY_BACKGROUND = "background", KEY_VIBRATION = "vibration";
-	private static final int CAMERA_REQUEST = 500, PICK_IMAGE = 123;
 	// TODO: Rename parameter arguments, choose names that match
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 	private static final String ARG_PARAM1 = "param1";
 	private static final String ARG_PARAM2 = "param2";
 
-	private FirebaseAuth mAuth;
-	private Vibrator vibe;
-	private Button autoButton;
-	private Button firebaseButton;
+	private StorageReference imageReference;
 	private ImageView matchImageView;
-	private String matchId;
+	private boolean vibrationState;
+	private Button firebaseButton;
+	private boolean isFromCamera;
+	private Bitmap matchBitmap;
+	private Button autoButton;
+	private Uri imagePath;
 
 	// TODO: Rename and change types of parameters
 	private String mParam1;
 	private String mParam2;
-	private boolean isFromCamera;
-	private Bitmap matchBitmap;
-	private Uri imagePath;
-	private StorageReference imageReference;
 
 	public FightFragment ()
 	{
@@ -131,14 +121,14 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 
 	private void handleSharedPreferences (View rootView)
 	{
-		int backgroundColor = sharedPreferences.getInt(KEY_BACKGROUND, R.color.black);
+		PrefsManager prefsManager = new PrefsManager(rootView.getContext());
+		vibrationState = prefsManager.getPrefBoolean(PrefsManager.KEY_VIBRATION);
+		int backgroundColor = prefsManager.getPrefInt(PrefsManager.KEY_BACKGROUND, R.color.black);
 		rootView.setBackgroundColor(requireActivity().getColor(backgroundColor));
 	}
 
 	private void initComponents (View rootView)
 	{
-		mAuth = FirebaseAuth.getInstance();
-		vibe = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
 		autoButton = rootView.findViewById(R.id.auto_mode_button);
 		firebaseButton = rootView.findViewById(R.id.firebaseButton);
 	}
@@ -147,7 +137,7 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 	{
 		autoButton.setOnClickListener(view ->
 		{
-			vibrate();
+			Commons.vibrate();
 			Snackbar.make(rootView, "autoModeActivityLauncher", Snackbar.LENGTH_SHORT)
 					.setAnchorView(R.id.bottom_navigation)
 					.show();
@@ -161,9 +151,12 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 	private void getSpinnerAdapter (Spinner matchType, Spinner matchLength, Spinner matchFormat)
 	{
 		// Create an ArrayAdapter using the string array and a default spinner layout
-		ArrayAdapter<CharSequence> matchTypeAdapter = ArrayAdapter.createFromResource(getContext(), R.array.match_type, android.R.layout.simple_spinner_item);
-		ArrayAdapter<CharSequence> matchLengthAdapter = ArrayAdapter.createFromResource(getContext(), R.array.match_length, android.R.layout.simple_spinner_item);
-		ArrayAdapter<CharSequence> matchFormatAdapter = ArrayAdapter.createFromResource(getContext(), R.array.match_format, android.R.layout.simple_spinner_item);
+		ArrayAdapter<CharSequence> matchTypeAdapter = ArrayAdapter.createFromResource(getContext(),
+				R.array.match_type, android.R.layout.simple_spinner_item);
+		ArrayAdapter<CharSequence> matchLengthAdapter = ArrayAdapter.createFromResource(getContext(),
+				R.array.match_length, android.R.layout.simple_spinner_item);
+		ArrayAdapter<CharSequence> matchFormatAdapter = ArrayAdapter.createFromResource(getContext(),
+				R.array.match_format, android.R.layout.simple_spinner_item);
 
 		// Specify the layout to use when the list of choices appears
 		matchTypeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -176,13 +169,6 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 		matchFormat.setAdapter(matchFormatAdapter);
 	}
 
-
-	private void vibrate ()
-	{
-		if (sharedPreferences.getBoolean(KEY_VIBRATION, false))
-			vibe.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE));
-	}
-
 	private void chooseFightingRules (View view, ViewGroup container)
 	{
 		final View rootView = getLayoutInflater().inflate(R.layout.fight_chooser, container, false);
@@ -192,12 +178,13 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 		final Spinner matchFormat = rootView.findViewById(R.id.match_format_spinner);
 		final Button fightButton = rootView.findViewById(R.id.start_button);
 		getSpinnerAdapter(matchType, matchLength, matchFormat);
-		vibrate();
+		Commons.vibrate();
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(view.getContext());
-		AlertDialog myDialog = builder.setTitle(R.string.prep_the_fight)
+		AlertDialog myDialog = builder
+				.setTitle(R.string.prep_the_fight)
 				.setView(rootView)
 				.setCancelable(true)
-				.setNeutralButton(R.string.cancel, (dialog, which) -> vibrate())
+				.setNeutralButton(R.string.cancel, (dialog, which) -> Commons.vibrate())
 				.show();
 		fightButton.setOnClickListener(view1 ->
 		{
@@ -218,18 +205,25 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 	private void choosePhotoFromPhone (View view)
 	{
 		MaterialAlertDialogBuilder mBuilder = new MaterialAlertDialogBuilder(view.getContext());
-		mBuilder.setTitle("Choose Cocktail Image").setMessage("you can select from galley or camera").setCancelable(true).setPositiveButton("camera", (dialog, which) ->
-		{
-			isFromCamera = true;
-			Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-			activityLauncher.launch(cameraIntent, this::myOnActivityResult);
-		}).setNegativeButton("gallery", (dialog, which) ->
-		{
-			isFromCamera = false;
-			Intent galleryIntent = new Intent().setType("image/*").setAction(Intent.ACTION_GET_CONTENT);
-			Intent chooserIntent = Intent.createChooser(galleryIntent, "Select Image From");
-			activityLauncher.launch(chooserIntent, this::myOnActivityResult);
-		}).setNeutralButton("Cancel", (dialog, which) -> Log.d(TAG, "simpleAlert: canceled")).create().show();
+		mBuilder.setTitle("Choose Cocktail Image")
+				.setMessage("you can select from galley or camera")
+				.setCancelable(true)
+				.setPositiveButton("camera", (dialog, which) ->
+				{
+					isFromCamera = true;
+					Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+					activityLauncher.launch(cameraIntent, this::myOnActivityResult);
+				})
+				.setNegativeButton("gallery", (dialog, which) ->
+				{
+					isFromCamera = false;
+					Intent galleryIntent = new Intent().setType("image/*").setAction(Intent.ACTION_GET_CONTENT);
+					Intent chooserIntent = Intent.createChooser(galleryIntent, "Select Image From");
+					activityLauncher.launch(chooserIntent, this::myOnActivityResult);
+				})
+				.setNeutralButton("Cancel", (dialog, which) -> Log.d(TAG, "simpleAlert: canceled"))
+				.create()
+				.show();
 	}
 
 	private void myOnActivityResult (ActivityResult result)
@@ -240,17 +234,15 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 		if (isFromCamera && resultCode == Activity.RESULT_OK)
 			matchBitmap = (Bitmap) Objects.requireNonNull(data).getExtras().get("data");
 		else if (!isFromCamera && resultCode == Activity.RESULT_OK && Objects.requireNonNull(data).getData() != null)
-		{
-			imagePath = data.getData();
 			try
 			{
+				imagePath = data.getData();
 				matchBitmap = MediaStore.Images.Media.getBitmap(requireActivity().getContentResolver(), imagePath);
 			}
 			catch (IOException e)
 			{
 				e.printStackTrace();
 			}
-		}
 		matchImageView.setImageBitmap(matchBitmap);
 	}
 
@@ -269,22 +261,23 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 		else
 			uploadTask = imageReference.putFile(imagePath);
 		if (uploadTask != null)
-			uploadTask.addOnFailureListener(e -> Toast.makeText(requireActivity(), "Image upload NOT successfully", Toast.LENGTH_SHORT).show()).addOnSuccessListener(taskSnapshot -> Toast.makeText(requireActivity(), "Image upload successfully", Toast.LENGTH_SHORT).show());
+			uploadTask
+					.addOnFailureListener(e ->
+							Commons.showToast("Image upload NOT successfully"))
+					.addOnSuccessListener(taskSnapshot ->
+							Commons.showToast("Image upload successfully"));
 		else
-		{
-			Toast.makeText(requireActivity(), "Please upload a photo!", Toast.LENGTH_SHORT).show();
-		}
+			Commons.showToast("Please upload a photo!");
 	}
 
 	private void startFight (String type, String length, String format)
 	{
-		FirebaseDatabase database = FirebaseDatabase.getInstance();
-		DatabaseReference myRef1 = database.getReference("users/" + mAuth.getUid() + "/match_history");
+		DatabaseReference myRef1 = FirebaseManager.getDataRef("users/" + FirebaseManager.getUid() + "/match_history");
 		DatabaseReference myRef2 = myRef1.push();
-		DatabaseReference myRef3 = database.getReference("processor/currentMatch");
+		DatabaseReference myRef3 =  FirebaseManager.getDataRef("processor/currentMatch");
 		String matchId = myRef2.getKey();
 		myRef3.setValue(matchId);
-		imageReference = FirebaseStorage.getInstance().getReference("users/" + mAuth.getUid() + "/matches/" + matchId);
+		imageReference = FirebaseManager.getStorageRef("users/" + FirebaseManager.getUid() + "/matches/" + matchId);
 		LocalDateTime myDateObj = LocalDateTime.now();
 		DateTimeFormatter myFormatDateObj = DateTimeFormatter.ofPattern("dd-MM-yyyy");
 		DateTimeFormatter myFormatTimeObj = DateTimeFormatter.ofPattern("HH:mm:ss");
@@ -301,6 +294,12 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 				"0-0",
 				length);
 		myRef2.setValue(match);
+
+		Intent serviceIntent = new Intent(requireContext(), BackgroundService.class);
+		//Start Service
+		serviceIntent.setAction("ACTION_START_FOREGROUND_SERVICE");
+		ContextCompat.startForegroundService(requireContext(), serviceIntent);
+
 		Intent intent = new Intent(getContext(), FightActivity.class);
 		Gson gson = new Gson();
 		String json = gson.toJson(match);

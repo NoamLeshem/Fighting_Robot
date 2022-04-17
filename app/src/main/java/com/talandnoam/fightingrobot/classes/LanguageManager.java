@@ -33,12 +33,8 @@ public class LanguageManager
 	private String getLanguageCode (String language)
 	{
 		for (int i = 0; i < languages.length; i++)
-		{
 			if (languages[i].equals(language))
-			{
 				return languageCodes[i];
-			}
-		}
 		return "en";
 	}
 

@@ -1,9 +1,5 @@
 package com.talandnoam.fightingrobot.fragments;
 
-import static com.facebook.FacebookSdk.getApplicationContext;
-
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -23,6 +19,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.talandnoam.fightingrobot.R;
 import com.talandnoam.fightingrobot.classes.Match;
+import com.talandnoam.fightingrobot.classes.PrefsManager;
 import com.talandnoam.fightingrobot.utilities.adapters.MatchListAdapter;
 
 import java.util.ArrayList;
@@ -35,13 +32,9 @@ import java.util.List;
  */
 public class HistoryFragment extends Fragment
 {
-	private static final SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("MainActivity", Context.MODE_PRIVATE);
-	private static final String KEY_BACKGROUND = "background";
 	private SwipeRefreshLayout mySwipeRefreshLayout;
 	private static final String TAG = "HistoryFragment";
 
-	private ListView listView;
-	boolean isListFull = false;
 	MatchListAdapter adapter;
 
 	// TODO: Rename parameter arguments, choose names that match
@@ -102,10 +95,11 @@ public class HistoryFragment extends Fragment
 		 */
 		mySwipeRefreshLayout.setOnRefreshListener(this::myUpdateOperation);
 
-		int backgroundColor = sharedPreferences.getInt(KEY_BACKGROUND, R.color.black);
+		PrefsManager prefsManager = new PrefsManager(rootView.getContext());
+		int backgroundColor = prefsManager.getPrefInt(PrefsManager.KEY_BACKGROUND, R.color.black);
 		rootView.setBackgroundColor(requireActivity().getColor(backgroundColor));
 
-		listView = rootView.findViewById(R.id.matches_list);
+		ListView listView = rootView.findViewById(R.id.matches_list);
 		List<Match> allMatchesList = new ArrayList<>();
 		adapter = new MatchListAdapter(this.getContext(), allMatchesList);
 		inflateListView(listView);
@@ -114,7 +108,6 @@ public class HistoryFragment extends Fragment
 	}
 	private void extractAllMatches (List<Match> allMatchesList)
 	{
-		isListFull = false;
 		FirebaseAuth mAuth = FirebaseAuth.getInstance();
 		DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference("users/" + mAuth.getUid() + "/match_history");
 		databaseReference.addListenerForSingleValueEvent(new ValueEventListener()
