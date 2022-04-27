@@ -1,14 +1,17 @@
 package com.talandnoam.fightingrobot.activities;
 
+import static com.google.android.gms.common.util.DeviceProperties.isTablet;
+
 import android.annotation.SuppressLint;
-import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.Button;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,32 +25,30 @@ import com.talandnoam.fightingrobot.R;
 import com.talandnoam.fightingrobot.classes.FirebaseManager;
 import com.talandnoam.fightingrobot.classes.Match;
 import com.talandnoam.fightingrobot.classes.PrefsManager;
+import com.talandnoam.fightingrobot.databinding.ActivityFightBinding;
 
 import java.util.Objects;
 
-import io.github.controlwear.virtual.joystick.android.JoystickView;
-
 public class FightActivity extends AppCompatActivity
 {
-	private DatabaseReference myRef2, myRef3, myRef4, myRef5, myRef6, hitRef;
+	private DatabaseReference myRef2, myRef3, myRef4, myRef5, myRef6;
 	private static final String TAG = "FightActivity";
-	private JoystickView joystickLeft, joystickRight;
-	public static TextView matchScore;
-	public TextView matchFormat;
-	private Button shootButton;
+	public static ActivityFightBinding binding;
 	public static Match match;
-	private WebView webView;
 	public static int score;
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@SuppressLint("ClickableViewAccessibility")
 	@Override
 	protected void onCreate (Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_fight);
+		binding = ActivityFightBinding.inflate(getLayoutInflater());
+		setContentView(binding.getRoot());
 		Objects.requireNonNull(getSupportActionBar()).hide();
 
-		getViews();
 		extractDataFromIntent();
 		handleSharedPreferences();
 		initializeFirebaseDirectory();
@@ -55,43 +56,73 @@ public class FightActivity extends AppCompatActivity
 		setListeners();
 	}
 
-	private void getViews ()
-	{
-		webView = findViewById(R.id.web_view);
-		joystickLeft = findViewById(R.id.joystick_left);
-		joystickRight = findViewById(R.id.joystick_right);
-		shootButton = findViewById(R.id.shoot_button);
-		matchFormat = findViewById(R.id.foramt);
-		matchScore = findViewById(R.id.score);
-	}
-
+	/**
+	 * This method is responsible for extracting the data from the intent.
+	 * <p>
+	 *     This method is called in {@link #onCreate(Bundle)}
+	 *     The data is extracted from the intent and saved in the match variable.
+	 * </p>
+	 */
 	private void extractDataFromIntent ()
 	{
-		Intent intent = getIntent();
 		Gson gson = new Gson();
-		String json = intent.getStringExtra("match");
+		String json = getIntent().getStringExtra("match");
 		match = gson.fromJson(json, Match.class);
-		matchFormat.setText(match.getFormat());
+		binding.foramt.setText(match.getFormat());
 	}
 
+	/**
+	 * This method is responsible for handling the shared preferences.
+	 * It is used to get the background color of the screen.
+	 * <p>
+	 *     This method is called in {@link #onCreate(Bundle)}
+	 *     The background color is saved in the shared preferences.
+	 *     If the background color is not saved in the shared preferences,
+	 *     the default background color is set to be black.
+	 */
 	private void handleSharedPreferences ()
 	{
 		PrefsManager prefsManager = new PrefsManager(this);
-		int backgroundColor = prefsManager.getPrefInt(PrefsManager.KEY_BACKGROUND, R.color.black);
-		findViewById(R.id.activity_fight).setBackgroundColor(getColor(backgroundColor));
+		int backgroundColor = prefsManager
+				.getPrefInt(PrefsManager.KEY_BACKGROUND, R.color.black);
+		binding.activityFight
+				.setBackgroundColor(getColor(backgroundColor));
 	}
 
+	/**
+	 * Initialize Firebase database directory for this activity
+	 * <p>
+	 *     This method is called in {@link #onCreate(Bundle)}
+	 *     and it is used to initialize the Firebase database directory
+	 *     for this activity.
+	 *     The directory is initialized by calling {@link FirebaseManager#getDataRef(String)}
+	 *     with the directory name {@link #TAG}
+	 *     and the directory is stored in {@link #myRef2}
+	 *     and {@link #myRef3}
+	 *     and {@link #myRef4}
+	 *     and {@link #myRef5}
+	 *     and {@link #myRef6}
+	 * </p>
+	 */
 	private void initializeFirebaseDirectory ()
 	{
-		hitRef = FirebaseManager.getDataRef("processor/isHit");
-		DatabaseReference myRef1 = FirebaseManager.getDataRef("processor/controller");
-		myRef2 = myRef1.child("leftStick/angle");
-		myRef3 = myRef1.child("leftStick/strength");
-		myRef4 = myRef1.child("rightStick/x");
-		myRef5 = myRef1.child("rightStick/y");
-		myRef6 = FirebaseManager.getDataRef("processor/laserEmitter");
+		// hitRef = FirebaseManager.getDataRef("processor/isHit"); // hitRef is the firebase directory for knowing if the robot got hit
+		DatabaseReference myRef1 = FirebaseManager.getDataRef("processor/controller"); // myRef1 is the firebase directory for the controller
+		myRef2 = myRef1.child("leftStick/angle"); // myRef2 is the firebase directory for the left stick angle
+		myRef3 = myRef1.child("leftStick/strength"); // myRef3 is the firebase directory for the left stick strength
+		myRef4 = myRef1.child("rightStick/x"); // myRef4 is the firebase directory for the right stick x
+		myRef5 = myRef1.child("rightStick/y"); // myRef5 is the firebase directory for the right stick y
+		myRef6 = FirebaseManager.getDataRef("processor/laserEmitter"); // myRef6 is the firebase directory for the laser emitter
 	}
 
+	/**
+	 * This method is responsible for listening to the firebase directory,
+	 * and updating the score of the match accordingly.
+	 * <p>
+	 *     This method is called in {@link #onCreate(Bundle)}
+	 *     and it is used to listen to the firebase directory
+	 *     and update the score of the match accordingly.
+	 */
 	private void setMatchScore ()
 	{
 		DatabaseReference myRef = FirebaseManager.getDataRef("users/" + FirebaseManager.getUid() + "/match_history/" + match.getId() + "/matchResult");
@@ -99,7 +130,7 @@ public class FightActivity extends AppCompatActivity
 		{
 			@Override
 			public void onDataChange (@NonNull DataSnapshot snapshot)
-			{ matchScore.setText(snapshot.getValue(String.class)); }
+			{ binding.score.setText(snapshot.getValue(String.class)); }
 
 			@Override
 			public void onCancelled (@NonNull DatabaseError error)
@@ -107,6 +138,12 @@ public class FightActivity extends AppCompatActivity
 		});
 	}
 
+	/**
+	 * This method is responsible for setting the listeners for the joystick and the shoot button.
+	 * The listeners are responsible for sending the data to the firebase directory.
+	 * The listeners are also responsible for updating the score.
+	 * The listeners are also responsible for updating the match result.
+	 */
 	@SuppressLint("ClickableViewAccessibility")
 	private void setListeners ()
 	{
@@ -120,45 +157,63 @@ public class FightActivity extends AppCompatActivity
 //			public void onCancelled (@NonNull DatabaseError error)
 //			{ Log.d(TAG, "onCancelled:     " + error.getMessage()); }
 //		});
-		shootButton.setOnTouchListener((v, event) ->
-				FightActivity.this.sendToFirebaseWhilePressed(event));
-		joystickLeft.setOnMoveListener((angle, strength) ->
+		binding.shootButton.setOnTouchListener((v, event) ->
+				sendToFirebaseWhilePressed(event));
+		binding.joystickLeft.setOnMoveListener((angle, strength) ->
 		{
 			myRef2.setValue(angle);
 			myRef3.setValue(strength);
 		});
-		joystickRight.setOnMoveListener((angle, strength) ->
+		binding.joystickRight.setOnMoveListener((angle, strength) ->
 		{
 			double x = Math.cos(Math.toRadians(angle)) * (strength * 0.9) + 90;
 			double y = Math.sin(Math.toRadians(angle)) * (strength * 0.9) + 90;
 			myRef4.setValue((int) x);
 			myRef5.setValue((int) y);
 		});
-		webView.setWebViewClient(new WebViewClient());
-		webView.loadUrl("http://192.168.1.27:8000/index.html"); // TODO: make it work correctly
+		final WebSettings webSettings = binding.webView.getSettings();
+		webSettings.setAppCachePath(getApplicationContext().getCacheDir().getAbsolutePath());
+		webSettings.setAppCacheEnabled(false);
+		webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE); // there are transfer problems when using cached resources
+		webSettings.setUseWideViewPort(true);
+		webSettings.setLoadWithOverviewMode(true);
+		webSettings.setDatabaseEnabled(true);
+		webSettings.setDomStorageEnabled(true);
+		webSettings.setAllowContentAccess(true);
+		webSettings.setAllowFileAccess(true);
+		webSettings.setSupportMultipleWindows(true);
+		webSettings.setUserAgentString("Mozilla/5.0 (Linux; Android " + Build.VERSION.RELEASE + "; Build/HUAWEI" +  getString(R.string.app_name) + ") Version/1.10" + (isTablet(this) ? " Tablet " : " Mobile ") + "Safari/537.36");
+		binding.webView.setWebChromeClient(new WebChromeClient());
+		binding.webView.setWebViewClient(new WebViewClient());
+
+		// Allow webContentsDebugging if APK was build as debuggable
+		if (0 != (getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE))
+			WebView.setWebContentsDebuggingEnabled(true);
+		binding.webView.loadUrl("http://10.100.102.51:8000/index.html");
 	}
 
-//	public void handleHitEvent (Context context, @NonNull DataSnapshot snapshot)
-//	{
-//		score += snapshot.getValue(Boolean.class) ? 1 : 0;
-//		if (score == Integer.parseInt(match.getRoundsCap()))
-//		{
-//			notifyLostMessage(context);
-//		}
-//		matchScore.setText(score + " / " + match.getRoundsCap());
-//	}
-
-//	private void notifyLostMessage (Context context)
-//	{
-//		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
-//		builder.setTitle(R.string.you_lost)
-//				.setMessage(R.string.lose_messege)
-//				.setNegativeButton(R.string.ok, (dialogInterface, i) ->
-//						Commons.activityLauncher(this, new Intent(context, MainActivity.class)))
-//				.setCancelable(false)
-//				.show();
-//		NotificationHelper.createNotification("You lost\nYou lost the match", context);
-//	}
+/*
+	public void handleHitEvent (Context context, @NonNull DataSnapshot snapshot)
+	{
+		score += snapshot.getValue(Boolean.class) ? 1 : 0;
+		if (score == Integer.parseInt(match.getRoundsCap()))
+		{
+			notifyLostMessage(context);
+		}
+		matchScore.setText(score + " / " + match.getRoundsCap());
+	}
+	private void notifyLostMessage (Context context)
+	{
+		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
+		builder.setTitle(R.string.you_lost)
+				.setMessage(R.string.lose_messege)
+				.setNegativeButton(R.string.ok, (dialogInterface, i) ->
+						Commons.activityLauncher(this, new Intent(context, MainActivity.class)))
+				.setCancelable(false)
+				.show();
+		NotificationHelper.createNotification("You lost\nYou lost the match", context);
+	}
+*/
 
 	private boolean sendToFirebaseWhilePressed (MotionEvent event)
 	{

@@ -6,10 +6,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.facebook.login.LoginManager;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -20,6 +19,7 @@ import com.talandnoam.fightingrobot.classes.Commons;
 import com.talandnoam.fightingrobot.classes.FirebaseManager;
 import com.talandnoam.fightingrobot.classes.LanguageManager;
 import com.talandnoam.fightingrobot.classes.PrefsManager;
+import com.talandnoam.fightingrobot.databinding.FragmentSettingsBinding;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -29,13 +29,10 @@ import com.talandnoam.fightingrobot.classes.PrefsManager;
 public class SettingsFragment extends Fragment
 {
 	private static final String TAG = "SettingsFragment";
-	private Button signOutButton, primaryColorButton, bgChooseButton, languageButton, clearButton;
-	private SwipeRefreshLayout mySwipeRefreshLayout;
+	private FragmentSettingsBinding binding;
 	private LanguageManager languageManager;
-	private SwitchMaterial vibrationSwitch;
 	private PrefsManager prefsManager;
 	private String[] languages;
-	private View rootView;
 
 	// TODO: Rename parameter arguments, choose names that match
 	// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -84,52 +81,36 @@ public class SettingsFragment extends Fragment
 	}
 
 	@Override
-	public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+	public View onCreateView (@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
-		// Inflate the layout for this fragment
-		rootView = inflater.inflate(R.layout.fragment_settings, container, false);
+		binding = FragmentSettingsBinding.inflate(inflater, container, false);
 
-		getViews();
 		handleSharedPreferences();
 		setListeners();
 
-		return rootView;
-	}
-
-	private void getViews ()
-	{
-		signOutButton = rootView.findViewById(R.id.sign_out);
-		primaryColorButton = rootView.findViewById(R.id.color_chooser);
-		bgChooseButton = rootView.findViewById(R.id.bg_chooser);
-		languageButton = rootView.findViewById(R.id.language_chooser);
-		clearButton = rootView.findViewById(R.id.clear_data_button);
-		vibrationSwitch = rootView.findViewById(R.id.vibe_chooser);
-		mySwipeRefreshLayout = rootView.findViewById(R.id.swipe_refresh_layout);
+		return binding.getRoot();
 	}
 
 	private void handleSharedPreferences()
 	{
 		prefsManager = new PrefsManager(requireContext());
-		languageManager = new LanguageManager(requireActivity());
+		binding.vibeChooser.setChecked(prefsManager.getPrefBoolean(PrefsManager.KEY_VIBRATION));
 		int backgroundColor = prefsManager.getPrefInt(PrefsManager.KEY_BACKGROUND, R.color.black);
-		rootView.setBackgroundColor(requireActivity().getColor(backgroundColor));
+		binding.getRoot().setBackgroundColor(requireActivity().getColor(backgroundColor));
+		languageManager = new LanguageManager(requireActivity());
 		languageManager.setLanguage(prefsManager.getPrefString(PrefsManager.KEY_LANGUAGE, "English"));
 	}
 
 	private void setListeners ()
 	{
-		vibrationSwitch.setChecked(prefsManager.getPrefBoolean(PrefsManager.KEY_VIBRATION));
-		vibrationSwitch.setOnClickListener(view -> switchVibrationMode(rootView, vibrationSwitch));
-		clearButton.setOnClickListener(this::clearData);
-		primaryColorButton.setOnClickListener(this::choosePrimaryColor);
-		bgChooseButton.setOnClickListener(this::chooseBackgroundColor);
-		signOutButton.setOnClickListener(this::logoutVerify);
-		/*
-		 * Sets up a SwipeRefreshLayout.OnRefreshListener that is invoked when the user
-		 * performs a swipe-to-refresh gesture.
-		 */
-		mySwipeRefreshLayout.setOnRefreshListener(this::myUpdateOperation);
-		languageButton.setOnClickListener(this::chooseLanguage);
+		binding.vibeChooser
+				.setOnClickListener(view -> switchVibrationMode(binding.vibeChooser));
+		binding.clearDataButton.setOnClickListener(this::clearData);
+		binding.colorChooser.setOnClickListener(this::choosePrimaryColor);
+		binding.bgChooser.setOnClickListener(this::chooseBackgroundColor);
+		binding.signOut.setOnClickListener(this::logoutVerify);
+		binding.swipeRefreshLayout.setOnRefreshListener(this::myUpdateOperation);
+		binding.languageChooser.setOnClickListener(this::chooseLanguage);
 	}
 
 	private void chooseLanguage (View view)
@@ -164,7 +145,7 @@ public class SettingsFragment extends Fragment
 		prefsManager.setPref(PrefsManager.KEY_LANGUAGE, languageCode);
 	}
 
-	private void switchVibrationMode (View rootView, SwitchMaterial vibrationSwitch)
+	private void switchVibrationMode (SwitchMaterial vibrationSwitch)
 	{
 		Commons.showToast(getString(R.string.vibe_is) + " " + (vibrationSwitch.isChecked() ? getString(R.string.on) : getString(R.string.off)));
 		prefsManager.setPref(PrefsManager.KEY_VIBRATION, vibrationSwitch.isChecked());
@@ -174,7 +155,7 @@ public class SettingsFragment extends Fragment
 	private void myUpdateOperation ()
 	{
 		Log.d(TAG, "myUpdateOperation: ");
-		mySwipeRefreshLayout.setRefreshing(false);
+		binding.swipeRefreshLayout.setRefreshing(false);
 	}
 
 	private void clearData (View view)

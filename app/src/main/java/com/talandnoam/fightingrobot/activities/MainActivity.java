@@ -9,10 +9,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.talandnoam.fightingrobot.R;
 import com.talandnoam.fightingrobot.classes.Commons;
 import com.talandnoam.fightingrobot.classes.PrefsManager;
+import com.talandnoam.fightingrobot.databinding.ActivityMainBinding;
 import com.talandnoam.fightingrobot.fragments.FightFragment;
 import com.talandnoam.fightingrobot.fragments.HistoryFragment;
 import com.talandnoam.fightingrobot.fragments.SettingsFragment;
@@ -22,8 +22,8 @@ import java.util.Objects;
 public class MainActivity extends AppCompatActivity
 {
 	private boolean doubleBackToExitPressedOnce = false;
-	private BottomNavigationView navigationView;
 	private FragmentManager fragmentManager;
+	private ActivityMainBinding binding;
 	private PrefsManager prefsManager;
 	private ActionBar actionBar;
 
@@ -31,7 +31,8 @@ public class MainActivity extends AppCompatActivity
 	protected void onCreate (Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_main);
+		binding = ActivityMainBinding.inflate(getLayoutInflater());
+		setContentView(binding.getRoot());
 
 		initializeVariables();
 		handleSharedPreferences();
@@ -40,7 +41,6 @@ public class MainActivity extends AppCompatActivity
 
 	private void initializeVariables ()
 	{
-		navigationView = findViewById(R.id.bottom_navigation);
 		fragmentManager = getSupportFragmentManager();
 		actionBar = getSupportActionBar();
 	}
@@ -50,14 +50,14 @@ public class MainActivity extends AppCompatActivity
 		prefsManager = new PrefsManager(this);
 		int fragmentId = prefsManager.getPrefInt(PrefsManager.KEY_FRAGMENT, R.id.fight);
 		handleItemSelected(fragmentId);
-		navigationView.setSelectedItemId(fragmentId);
+		binding.bottomNavigation.setSelectedItemId(fragmentId);
 		int themeId = prefsManager.getPrefInt(PrefsManager.KEY_THEME, R.style.ThemeFightingRobot);
 		this.setTheme(themeId);
 	}
 
 	private void setListeners ()
 	{
-		navigationView.setOnItemSelectedListener(item -> handleItemSelected(item.getItemId()));
+		binding.bottomNavigation.setOnItemSelectedListener(item -> handleItemSelected(item.getItemId()));
 		fragmentManager.setFragmentResultListener(
 				"requestKey", this, (requestKey, result) ->
 				{

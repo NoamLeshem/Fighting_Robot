@@ -19,7 +19,7 @@ import com.talandnoam.fightingrobot.activities.MainActivity;
 
 import java.util.Random;
 
-public class NotificationHelper
+public final class NotificationHelper
 {
 	public static String CHANNEL_ID = "fighting_robot_channel_id";
 	public static String name = "Fighting Robot";

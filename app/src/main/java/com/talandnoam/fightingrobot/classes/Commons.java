@@ -7,9 +7,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.view.View;
 import android.widget.Toast;
 
-public class Commons
+import com.google.android.material.snackbar.Snackbar;
+
+public final class Commons
 {
 	private static final PrefsManager prefsManager = new PrefsManager(getApplicationContext());
 	private static final Vibrator vibe = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
@@ -41,5 +44,15 @@ public class Commons
 	public static void showToast(int message)
 	{
 		Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+	}
+
+	public static Snackbar makeSnackbar(View view, String message)
+	{
+		return Snackbar.make(view, message, Snackbar.LENGTH_SHORT);
+	}
+
+	public static Snackbar makeSnackbar(View view, int message)
+	{
+		return Snackbar.make(view, message, Snackbar.LENGTH_SHORT);
 	}
 }

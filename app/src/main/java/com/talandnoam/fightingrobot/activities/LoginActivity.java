@@ -7,9 +7,6 @@ import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -28,8 +25,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.progressindicator.LinearProgressIndicator;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
@@ -43,6 +38,7 @@ import com.talandnoam.fightingrobot.classes.FirebaseManager;
 import com.talandnoam.fightingrobot.classes.LanguageManager;
 import com.talandnoam.fightingrobot.classes.PrefsManager;
 import com.talandnoam.fightingrobot.classes.TextValidator;
+import com.talandnoam.fightingrobot.databinding.ActivityLoginBinding;
 
 import java.util.Arrays;
 import java.util.Objects;
@@ -52,16 +48,11 @@ import java.util.regex.Pattern;
 public class LoginActivity extends Activity
 {
 	private static final String TAG = "LoginActivity";
-	private Button emailPassLogin, loginWithFacebook, helpPassword, googleButton;
-	private TextInputLayout emailInputLayout, passwordInputLayout;
-	boolean isEmailValid = false, isPasswordValid = false;
-	private LinearProgressIndicator progressIndicator;
+	private boolean isEmailValid = false, isPasswordValid = false;
 	private static final int RC_SIGN_IN = 9001;
-	private EditText userEmail, userPassword;
 	private CallbackManager callbackManager;
 	private int numberOfIncorrectAttempts;
-	private TextView toSignUpActivity;
-	private CheckBox showPassword;
+	private ActivityLoginBinding binding;
 	private Intent toMainActivity;
 
 	@Override
@@ -80,9 +71,9 @@ public class LoginActivity extends Activity
 		startSplashScreen();
 
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_login);
+		binding = ActivityLoginBinding.inflate(getLayoutInflater());
+		setContentView(binding.getRoot());
 
-		getViews();
 		initVariables();
 		handleSharedPreferences();
 		setListeners();
@@ -100,21 +91,6 @@ public class LoginActivity extends Activity
 		});
 	}
 
-	private void getViews ()
-	{
-		progressIndicator = findViewById(R.id.linearProgressIndicator);
-		emailPassLogin = findViewById(R.id.user_and_password_login);
-		passwordInputLayout = findViewById(R.id.textInputLayout1);
-		emailInputLayout = findViewById(R.id.textInputLayout);
-		loginWithFacebook = findViewById(R.id.login_button);
-		toSignUpActivity = findViewById(R.id.new_account);
-		helpPassword = findViewById(R.id.help_password);
-		showPassword = findViewById(R.id.show_password);
-		googleButton = findViewById(R.id.google_button);
-		userPassword = findViewById(R.id.password);
-		userEmail = findViewById(R.id.username);
-	}
-
 	private void initVariables ()
 	{
 		toMainActivity = new Intent(this, MainActivity.class);
@@ -125,47 +101,47 @@ public class LoginActivity extends Activity
 	{
 		PrefsManager prefsManager = new PrefsManager(this);
 		int backgroundColor = prefsManager.getPrefInt(PrefsManager.KEY_BACKGROUND, R.color.black);
-		findViewById(R.id.activity_login).setBackgroundColor(getColor(backgroundColor));
+		binding.activityLogin.setBackgroundColor(getColor(backgroundColor));
 		LanguageManager languageManager = new LanguageManager(this);
 		languageManager.setLanguage(prefsManager.getPrefString(PrefsManager.KEY_LANGUAGE, "en"));
 	}
 
 	private void setListeners ()
 	{
-		userEmail.addTextChangedListener(new TextValidator(userEmail)
+		binding.username.addTextChangedListener(new TextValidator(binding.username)
 		{
 			@Override
 			public void validate (TextView textView, String text)
 			{
 				validateEmailOrPassword(
-						emailInputLayout,
+						binding.textInputLayout,
 						text,
 						R.string.invalid_email,
 						true);
 			}
 		});
 
-		userPassword.addTextChangedListener(new TextValidator(userPassword)
+		binding.password.addTextChangedListener(new TextValidator( binding.password)
 		{
 			@Override
 			public void validate (TextView textView, String text)
 			{
 				validateEmailOrPassword(
-						passwordInputLayout,
+						binding.textInputLayout1,
 						text,
 						R.string.invalid_password,
 						false);
 			}
 		});
 		Intent toSignUp = new Intent(this, SignUpActivity.class);
-		toSignUpActivity.setOnClickListener(view ->
+		binding.newAccount.setOnClickListener(view ->
 				Commons.activityLauncher(this, toSignUp));
-		showPassword.setOnCheckedChangeListener((compoundButton, isChecked) ->
+		binding.showPassword.setOnCheckedChangeListener((compoundButton, isChecked) ->
 				changePasswordState(isChecked));
-		loginWithFacebook.setOnClickListener(view -> facebookLogin());
-		helpPassword.setOnClickListener(this::showPasswordRules);
-		googleButton.setOnClickListener(view -> googleLogin());
-		emailPassLogin.setOnClickListener(view -> login());
+		binding.loginButton.setOnClickListener(view -> facebookLogin());
+		binding.helpPassword.setOnClickListener(this::showPasswordRules);
+		binding.googleButton.setOnClickListener(view -> googleLogin());
+		binding.userAndPasswordLogin.setOnClickListener(view -> login());
 	}
 
 	private void validateEmailOrPassword (TextInputLayout inputLayout, String text, int resourceID, boolean isEmail)
@@ -183,9 +159,9 @@ public class LoginActivity extends Activity
 			inputLayout.setError(getString(resourceID));
 			numberOfIncorrectAttempts++;
 		}
-		emailPassLogin.setEnabled(isEmailValid && isPasswordValid);
+		binding.userAndPasswordLogin.setEnabled(isEmailValid && isPasswordValid);
 		if(numberOfIncorrectAttempts > 10)
-			helpPassword.setVisibility(View.VISIBLE);
+			binding.helpPassword.setVisibility(View.VISIBLE);
 	}
 
 	private boolean isTextValidUsingRegex (String text, boolean isEmail)
@@ -226,20 +202,20 @@ public class LoginActivity extends Activity
 	private void changePasswordState (boolean isChecked)
 	{
 		Commons.vibrate();
-		userPassword.setTransformationMethod(
+		binding.password.setTransformationMethod(
 				isChecked ?
 						HideReturnsTransformationMethod.getInstance() :
 						PasswordTransformationMethod.getInstance());
-		userPassword.setSelection(userPassword.getText().length());
+		binding.password.setSelection( binding.password.getText().length());
 	}
 
 	private void login ()
 	{
 		Commons.vibrate();
-		emailPassLogin.setEnabled(false);
-		String emailAddress = userEmail.getText().toString().trim();
-		String pass = userPassword.getText().toString().trim();
-		progressIndicator.setVisibility(View.VISIBLE);
+		binding.userAndPasswordLogin.setEnabled(false);
+		String emailAddress = binding.username.getText().toString().trim();
+		String pass =  binding.password.getText().toString().trim();
+		binding.linearProgressIndicator.setVisibility(View.VISIBLE);
 		loginWithEmailAndPass(emailAddress, pass);
 	}
 
@@ -255,7 +231,7 @@ public class LoginActivity extends Activity
 	private void facebookLogin ()
 	{
 		Commons.vibrate();
-		progressIndicator.setVisibility(View.VISIBLE);
+		binding.linearProgressIndicator.setVisibility(View.VISIBLE);
 		LoginManager.getInstance()
 				.logInWithReadPermissions(this, Arrays.asList("email", "public_profile"));
 
@@ -287,7 +263,7 @@ public class LoginActivity extends Activity
 	private void googleLogin ()
 	{
 		Commons.vibrate();
-		progressIndicator.setVisibility(View.VISIBLE);
+		binding.linearProgressIndicator.setVisibility(View.VISIBLE);
 		// [START config_sign_in]
 		// Configure Google Sign In
 		GoogleSignInOptions gso = new GoogleSignInOptions
@@ -322,12 +298,12 @@ public class LoginActivity extends Activity
 			catch (ApiException e)
 			{
 				// Google Sign In failed, update UI appropriately
-				progressIndicator.setVisibility(View.GONE);
+				binding.linearProgressIndicator.setVisibility(View.GONE);
 				Log.w(TAG, "Google sign in failed", e);
 			}
 		}
 		callbackManager.onActivityResult(requestCode, resultCode, data);
-		progressIndicator.setVisibility(View.GONE);
+		binding.linearProgressIndicator.setVisibility(View.GONE);
 		Log.d(TAG, "onActivityResult: data = " + data.getExtras().toString());
 	}
 
@@ -348,20 +324,20 @@ public class LoginActivity extends Activity
 			// If sign in fails, display a message to the user.
 			Log.w(TAG, "handleTaskResult:failure", task.getException());
 			Commons.showToast("Authentication failed.");
-			progressIndicator.setVisibility(View.GONE);
+			binding.linearProgressIndicator.setVisibility(View.GONE);
 			if (Objects.requireNonNull(Objects.requireNonNull(task.getException())
 					.getMessage())
 					.equals("The password is invalid or the user does not have a password."))
-				Snackbar.make(emailPassLogin, R.string.wrong_password, Snackbar.LENGTH_LONG)
-						.setAction(R.string.clear, view -> userPassword.setText(""))
+				Commons.makeSnackbar(binding.userAndPasswordLogin, R.string.wrong_password)
+						.setAction(R.string.clear, view ->  binding.password.setText(""))
 						.show();
-			emailPassLogin.setEnabled(true);
+			binding.userAndPasswordLogin.setEnabled(true);
 		}
 	}
 
 	private void updateUI (FirebaseUser user)
 	{
-		progressIndicator.setVisibility(View.GONE);
+		binding.linearProgressIndicator.setVisibility(View.GONE);
 		if (user != null) sendUserData(user);
 	}
 

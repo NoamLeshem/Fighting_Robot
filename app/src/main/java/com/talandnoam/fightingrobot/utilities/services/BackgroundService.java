@@ -113,7 +113,7 @@ public class BackgroundService extends Service
 			notifyLostMessage();
 		}
 		NotificationHelper.createNotification("you got hit",this);
-		FightActivity.matchScore.setText(FightActivity.score + " / " + FightActivity.match.getRoundsCap());
+		FightActivity.binding.score.setText(FightActivity.score + " / " + FightActivity.match.getRoundsCap());
 	}
 
 	private void notifyLostMessage ()
@@ -122,7 +122,7 @@ public class BackgroundService extends Service
 		builder.setTitle(R.string.you_lost)
 				.setMessage(R.string.lose_messege)
 				.setNegativeButton(R.string.ok, (dialogInterface, i) ->
-						Commons.activityLauncher(getApplicationContext(), new Intent(this, MainActivity.class)))
+						Commons.activityLauncher(this, new Intent(this, MainActivity.class)))
 				.setCancelable(false)
 				.show();
 		NotificationHelper.createNotification( "You Lost!\nYou lost the match.\n", this);

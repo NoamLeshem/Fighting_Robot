@@ -6,16 +6,11 @@ import android.text.method.HideReturnsTransformationMethod;
 import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.progressindicator.LinearProgressIndicator;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -24,48 +19,30 @@ import com.talandnoam.fightingrobot.classes.Commons;
 import com.talandnoam.fightingrobot.classes.FirebaseManager;
 import com.talandnoam.fightingrobot.classes.PrefsManager;
 import com.talandnoam.fightingrobot.classes.TextValidator;
+import com.talandnoam.fightingrobot.databinding.ActivitySignUpBinding;
 
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SignUpActivity extends AppCompatActivity
 {
 	private static final String TAG = "SignUpActivity";
-	private TextInputLayout emailInputLayout, passwordInputLayout;
-	private boolean isEmailValid, isPasswordValid, vibrationState;
-	private LinearProgressIndicator progressIndicator;
-	private Button emailPassSignUp, helpPassword;
-	private EditText userEmail, userPassword;
+	private ActivitySignUpBinding binding;
+	private boolean isEmailValid, isPasswordValid;
 	private int numberOfIncorrectAttempts;
-	private TextView toLoginActivity;
 	private Intent toMainActivity;
-	private CheckBox showPassword;
 
 	@Override
 	protected void onCreate (Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_sign_up);
-		Objects.requireNonNull(getSupportActionBar()).hide();
+		binding = ActivitySignUpBinding.inflate(getLayoutInflater());
+		setContentView(binding.getRoot());
+		getSupportActionBar().hide();
 
-		getViews();
 		initVariables();
 		handleSharedPreferences();
 		setListeners();
-	}
-
-	private void getViews ()
-	{
-		progressIndicator = findViewById(R.id.linearProgressIndicator);
-		emailPassSignUp = findViewById(R.id.user_and_password_signup);
-		passwordInputLayout = findViewById(R.id.textInputLayout1);
-		emailInputLayout = findViewById(R.id.textInputLayout);
-		showPassword = findViewById(R.id.show_password);
-		helpPassword = findViewById(R.id.help_password);
-		toLoginActivity = findViewById(R.id.sign_up);
-		userPassword = findViewById(R.id.password);
-		userEmail = findViewById(R.id.username);
 	}
 
 	private void initVariables ()
@@ -76,38 +53,47 @@ public class SignUpActivity extends AppCompatActivity
 	private void handleSharedPreferences ()
 	{
 		PrefsManager prefsManager = new PrefsManager(this);
-		int backgroundColor = prefsManager.getPrefInt(PrefsManager.KEY_BACKGROUND, R.color.black);
-		findViewById(R.id.activity_sign_up).setBackgroundColor(getColor(backgroundColor));
+		int backgroundColor = prefsManager
+				.getPrefInt(PrefsManager.KEY_BACKGROUND, R.color.black);
+		binding.activitySignUp
+				.setBackgroundColor(getColor(backgroundColor));
 	}
 
 	private void setListeners ()
 	{
-		userEmail.addTextChangedListener(new TextValidator(userEmail)
+		binding.username
+				.addTextChangedListener(new TextValidator(binding.username)
 		{
 			@Override
 			public void validate (TextView textView, String text)
 			{
-				validateEmailOrPassword(emailInputLayout, text,
+				validateEmailOrPassword(binding.textInputLayout, text,
 					R.string.invalid_email, true);
 			}
 		});
 
-		userPassword.addTextChangedListener(new TextValidator(userPassword)
+		binding.password
+				.addTextChangedListener(new TextValidator(binding.password)
 		{
 			@Override
 			public void validate (TextView textView, String text)
 			{
-				validateEmailOrPassword(passwordInputLayout, text,
+				validateEmailOrPassword(binding.textInputLayout1, text,
 						R.string.invalid_password, false);
 			}
 		});
 
-		helpPassword.setOnClickListener(this::showPasswordRules);
-		showPassword.setOnCheckedChangeListener((compoundButton, isChecked) ->
-				changePasswordState(isChecked));
-		emailPassSignUp.setOnClickListener(view -> login());
+		binding.helpPassword
+				.setOnClickListener(this::showPasswordRules);
+		binding.showPassword
+				.setOnCheckedChangeListener((compoundButton, isChecked) ->
+						changePasswordState(isChecked));
+		binding.userAndPasswordSignup
+				.setOnClickListener(view -> login());
 		Intent toLogin = new Intent(this, LoginActivity.class);
-		toLoginActivity.setOnClickListener(view -> Commons.activityLauncher(this, toLogin));
+		binding.signUp
+				.setOnClickListener(view ->
+						Commons.activityLauncher(this, toLogin));
 	}
 
 	private void validateEmailOrPassword (TextInputLayout inputLayout, String text, int resourceID, boolean isEmail)
@@ -125,9 +111,9 @@ public class SignUpActivity extends AppCompatActivity
 			inputLayout.setError(getString(resourceID));
 			numberOfIncorrectAttempts++;
 		}
-		emailPassSignUp.setEnabled(isEmailValid && isPasswordValid);
+		binding.userAndPasswordSignup.setEnabled(isEmailValid && isPasswordValid);
 		if(numberOfIncorrectAttempts > 10)
-			helpPassword.setVisibility(View.VISIBLE);
+			binding.helpPassword.setVisibility(View.VISIBLE);
 	}
 
 	private boolean isTextValidUsingRegex (String text, boolean isEmail)
@@ -167,27 +153,29 @@ public class SignUpActivity extends AppCompatActivity
 	private void changePasswordState (boolean isChecked)
 	{
 		Commons.vibrate();
-		userPassword.setTransformationMethod(
+		binding.password.setTransformationMethod(
 				isChecked ?
 						HideReturnsTransformationMethod.getInstance() :
 						PasswordTransformationMethod.getInstance());
-		userPassword.setSelection(userPassword.getText().length());
+		binding.password.setSelection(binding.password.getText().length());
 	}
 
 	private void login ()
 	{
 		Commons.vibrate();
-		emailPassSignUp.setEnabled(false);
-		String emailAddress = userEmail.getText().toString().trim();
-		String pass = userPassword.getText().toString().trim();
-		progressIndicator.setVisibility(View.VISIBLE);
+		binding.userAndPasswordSignup.setEnabled(false);
+		String emailAddress = binding.username.getText().toString().trim();
+		String pass = binding.password.getText().toString().trim();
+		binding.linearProgressIndicator.setVisibility(View.VISIBLE);
 		createAccount(emailAddress, pass);
 	}
 
 	private void createAccount (String email, String password)
 	{
 		// [START create_user_with_email]
-		FirebaseManager.getAuth().createUserWithEmailAndPassword(email, password)
+		FirebaseManager
+				.getAuth()
+				.createUserWithEmailAndPassword(email, password)
 				.addOnCompleteListener(this, task ->
 		{
 			if (task.isSuccessful())
@@ -202,12 +190,12 @@ public class SignUpActivity extends AppCompatActivity
 				// If sign in fails, display a message to the user.
 				if (task.getException().getMessage()
 						.equals("The email address is already in use by another account."))
-					Snackbar.make(emailPassSignUp, R.string.email_occupied, Snackbar.LENGTH_LONG)
-							.setAction("clear",view -> userEmail.setText(""))
+					Commons.makeSnackbar(binding.userAndPasswordSignup, R.string.email_occupied)
+							.setAction("clear",view -> binding.username.setText(""))
 							.show();
 				Commons.showToast(R.string.auth_failed);
-				progressIndicator.setVisibility(View.GONE);
-				emailPassSignUp.setEnabled(true);
+				binding.linearProgressIndicator.setVisibility(View.GONE);
+				binding.userAndPasswordSignup.setEnabled(true);
 				// signIn(email, password);
 			}
 		});
@@ -217,7 +205,7 @@ public class SignUpActivity extends AppCompatActivity
 	private void updateUI (FirebaseUser user)
 	{
 		sendUserData(user);
-		progressIndicator.setVisibility(View.GONE);
+		binding.linearProgressIndicator.setVisibility(View.GONE);
 		Commons.activityLauncher(this, toMainActivity);
 	}
 

@@ -11,17 +11,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.Spinner;
 
 import androidx.activity.result.ActivityResult;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
@@ -33,6 +31,8 @@ import com.talandnoam.fightingrobot.classes.Commons;
 import com.talandnoam.fightingrobot.classes.FirebaseManager;
 import com.talandnoam.fightingrobot.classes.Match;
 import com.talandnoam.fightingrobot.classes.PrefsManager;
+import com.talandnoam.fightingrobot.databinding.FightChooserBinding;
+import com.talandnoam.fightingrobot.databinding.FragmentFightBinding;
 import com.talandnoam.fightingrobot.utilities.services.BackgroundService;
 
 import java.io.ByteArrayOutputStream;
@@ -55,13 +55,11 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 	private static final String ARG_PARAM1 = "param1";
 	private static final String ARG_PARAM2 = "param2";
 
+	private FragmentFightBinding binding;
+	private FightChooserBinding chooserBinding;
 	private StorageReference imageReference;
-	private ImageView matchImageView;
-	private boolean vibrationState;
-	private Button firebaseButton;
 	private boolean isFromCamera;
 	private Bitmap matchBitmap;
-	private Button autoButton;
 	private Uri imagePath;
 
 	// TODO: Rename and change types of parameters
@@ -107,42 +105,33 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 	}
 
 	@Override
-	public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+	public View onCreateView (@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
-		// Inflate the layout for this fragment
-		final View rootView = inflater.inflate(R.layout.fragment_fight, container, false);
+		binding = FragmentFightBinding.inflate(inflater, container, false);
 
-		handleSharedPreferences(rootView);
-		initComponents(rootView);
-		setListeners(container, rootView);
+		handleSharedPreferences(binding.getRoot());
+		setListeners(binding.getRoot());
 
-		return rootView;
+		return binding.getRoot();
 	}
 
 	private void handleSharedPreferences (View rootView)
 	{
-		PrefsManager prefsManager = new PrefsManager(rootView.getContext());
-		vibrationState = prefsManager.getPrefBoolean(PrefsManager.KEY_VIBRATION);
+		PrefsManager prefsManager = new PrefsManager(requireContext());
 		int backgroundColor = prefsManager.getPrefInt(PrefsManager.KEY_BACKGROUND, R.color.black);
 		rootView.setBackgroundColor(requireActivity().getColor(backgroundColor));
 	}
 
-	private void initComponents (View rootView)
+	private void setListeners (View rootView)
 	{
-		autoButton = rootView.findViewById(R.id.auto_mode_button);
-		firebaseButton = rootView.findViewById(R.id.firebaseButton);
-	}
-
-	private void setListeners (ViewGroup container, View rootView)
-	{
-		autoButton.setOnClickListener(view ->
+		binding.autoModeButton.setOnClickListener(view ->
 		{
 			Commons.vibrate();
-			Snackbar.make(rootView, "autoModeActivityLauncher", Snackbar.LENGTH_SHORT)
+			Commons.makeSnackbar(rootView, "autoModeActivityLauncher")
 					.setAnchorView(R.id.bottom_navigation)
 					.show();
 		});
-		firebaseButton.setOnClickListener(view -> chooseFightingRules(view, container));
+		binding.firebaseButton.setOnClickListener(view -> chooseFightingRules());
 	}
 
 	/**
@@ -169,43 +158,38 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 		matchFormat.setAdapter(matchFormatAdapter);
 	}
 
-	private void chooseFightingRules (View view, ViewGroup container)
+	private void chooseFightingRules ()
 	{
-		final View rootView = getLayoutInflater().inflate(R.layout.fight_chooser, container, false);
-		matchImageView = rootView.findViewById(R.id.match_image_view);
-		final Spinner matchType = rootView.findViewById(R.id.match_type_spinner);
-		final Spinner matchLength = rootView.findViewById(R.id.match_length_spinner);
-		final Spinner matchFormat = rootView.findViewById(R.id.match_format_spinner);
-		final Button fightButton = rootView.findViewById(R.id.start_button);
-		getSpinnerAdapter(matchType, matchLength, matchFormat);
+		chooserBinding = FightChooserBinding.inflate(getLayoutInflater());
+		getSpinnerAdapter(chooserBinding.matchTypeSpinner, chooserBinding.matchLengthSpinner, chooserBinding.matchFormatSpinner);
 		Commons.vibrate();
-		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(view.getContext());
+		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext());
 		AlertDialog myDialog = builder
 				.setTitle(R.string.prep_the_fight)
-				.setView(rootView)
+				.setView(chooserBinding.getRoot())
 				.setCancelable(true)
 				.setNeutralButton(R.string.cancel, (dialog, which) -> Commons.vibrate())
 				.show();
-		fightButton.setOnClickListener(view1 ->
+		chooserBinding.startButton.setOnClickListener(view ->
 		{
-			String type = matchType.getSelectedItem().toString().trim();
-			String length = matchLength.getSelectedItem().toString().trim();
-			String format = matchFormat.getSelectedItem().toString().trim();
+			String type = chooserBinding.matchTypeSpinner.getSelectedItem().toString().trim();
+			String length = chooserBinding.matchLengthSpinner.getSelectedItem().toString().trim();
+			String format = chooserBinding.matchFormatSpinner.getSelectedItem().toString().trim();
 			if (type.equals("match type") || length.equals("match length") || format.equals("match format") || matchBitmap == null)
-				Snackbar.make(view1, R.string.fill_all, Snackbar.LENGTH_SHORT).show();
+				Commons.makeSnackbar(view, R.string.fill_all).show();
 			else
 			{
 				startFight(type, length, format);
 				myDialog.dismiss();
 			}
 		});
-		matchImageView.setOnClickListener(this::choosePhotoFromPhone);
+		chooserBinding.matchImageView.setOnClickListener(this::choosePhotoFromPhone);
 	}
 
 	private void choosePhotoFromPhone (View view)
 	{
 		MaterialAlertDialogBuilder mBuilder = new MaterialAlertDialogBuilder(view.getContext());
-		mBuilder.setTitle("Choose Cocktail Image")
+		mBuilder.setTitle("Choose Robot Image")
 				.setMessage("you can select from galley or camera")
 				.setCancelable(true)
 				.setPositiveButton("camera", (dialog, which) ->
@@ -243,7 +227,7 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 			{
 				e.printStackTrace();
 			}
-		matchImageView.setImageBitmap(matchBitmap);
+		chooserBinding.matchImageView.setImageBitmap(matchBitmap);
 	}
 
 	private void uploadMatchImage ()

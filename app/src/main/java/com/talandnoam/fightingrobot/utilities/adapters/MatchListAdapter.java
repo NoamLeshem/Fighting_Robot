@@ -1,11 +1,6 @@
 package com.talandnoam.fightingrobot.utilities.adapters;
 
-import static com.facebook.FacebookSdk.getApplicationContext;
-
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.os.VibrationEffect;
-import android.os.Vibrator;
 import android.transition.AutoTransition;
 import android.transition.TransitionManager;
 import android.util.Log;
@@ -24,33 +19,32 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.talandnoam.fightingrobot.R;
+import com.talandnoam.fightingrobot.classes.Commons;
 import com.talandnoam.fightingrobot.classes.Match;
 
 import java.util.List;
 
+
 public class MatchListAdapter extends ArrayAdapter<Match>
 {
-	private static final SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("MainActivity", Context.MODE_PRIVATE);
-	private static final Vibrator vibe = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
-	private TextView headerTextView, matchId, matchWinner, matchDate, matchTime, matchType, matchFormat, matchResult;
-	private static final String TAG = "MatchListAdapter" ,KEY_VIBRATION = "vibration";
+	private TextView headerTextView, matchWinner, matchDate, matchTime, matchType, matchFormat, matchResult;
+	private static final String TAG = "MatchListAdapter";
 	private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-	private Context context;
+
+
 
 	public MatchListAdapter(Context context, List<Match> objects)
 	{
 		super(context, 0, objects);
-		this.setContext(context);
 	}
 
-	private void setContext (Context context)
-	{
-		this.context = context;
-	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent)
 	{
+//		if (convertView == null)
+//			binding = ExpandableCardViewBinding.inflate(LayoutInflater.from(getContext()), parent, false);
+//		convertView = binding.getRoot();
 		if (convertView == null)
 			convertView = LayoutInflater.from(getContext()).inflate(R.layout.expandable_card_view, parent, false);
 
@@ -69,7 +63,7 @@ public class MatchListAdapter extends ArrayAdapter<Match>
 		imageReference.getDownloadUrl()
 				.addOnSuccessListener(uri ->
 						Glide
-								.with(finalConvertView)
+								.with(getContext())
 								.load(uri)
 								.centerCrop()
 								.placeholder(R.drawable.ic_launcher_foreground)
@@ -80,9 +74,7 @@ public class MatchListAdapter extends ArrayAdapter<Match>
 
 	private void handleExpandAndCollapse (CardView cardView, ImageView arrow, LinearLayout hiddenView)
 	{
-		if (sharedPreferences.getBoolean(KEY_VIBRATION, false))
-			vibe.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE));
-
+		Commons.vibrate();
 		// If the CardView is already expanded, set its visibility
 		// to gone and change the expand less icon to expand more.
 		if (hiddenView.getVisibility() == View.VISIBLE)
@@ -105,7 +97,6 @@ public class MatchListAdapter extends ArrayAdapter<Match>
 	private void findViews (View convertView)
 	{
 		headerTextView = convertView.findViewById(R.id.heading);
-		// matchId = convertView.findViewById(R.id.match_id);
 		matchWinner = convertView.findViewById(R.id.match_winner);
 		matchDate = convertView.findViewById(R.id.match_date);
 		matchTime = convertView.findViewById(R.id.match_time);
@@ -117,7 +108,6 @@ public class MatchListAdapter extends ArrayAdapter<Match>
 	private void setValues (int position, Match match)
 	{
 		headerTextView.setText("Match #" + (position + 1));
-		// matchId.setText("ID: " + match.getId());
 		matchWinner.setText(match.getWinner());
 		matchDate.setText(match.getDate());
 		matchTime.setText(match.getTime());
