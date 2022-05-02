@@ -209,32 +209,19 @@ public class SettingsFragment extends Fragment
 	{
 		switch (selectedColor)
 		{
-			case 0:
-				return R.color.white; // white
-			case 1:
-				return R.color.black; // black
-			case 2:
-				return R.color.light_gray; // gray
-			case 3:
-				return R.color.light_blue; // light blue
-			case 4:
-				return R.color.light_red; // light red
-			case 5:
-				return R.color.light_green; // light green
-			case 6:
-				return R.color.light_yellow; // light yellow
-			case 7:
-				return R.color.light_purple; // light purple
-			case 8:
-				return R.color.dark_blue; // dark blue
-			case 9:
-				return R.color.dark_red; // dark red
-			case 10:
-				return R.color.dark_green; // dark green
-			case 11:
-				return R.color.dark_yellow; // dark yellow
-			case 12:
-				return R.color.dark_purple; // dark purple
+			case 0: return R.color.white; // white
+			case 1: return R.color.black; // black
+			case 2: return R.color.light_gray; // gray
+			case 3: return R.color.light_blue; // light blue
+			case 4: return R.color.light_red; // light red
+			case 5: return R.color.light_green; // light green
+			case 6: return R.color.light_yellow; // light yellow
+			case 7: return R.color.light_purple; // light purple
+			case 8: return R.color.dark_blue; // dark blue
+			case 9: return R.color.dark_red; // dark red
+			case 10: return R.color.dark_green; // dark green
+			case 11: return R.color.dark_yellow; // dark yellow
+			case 12: return R.color.dark_purple; // dark purple
 		}
 		return -1;
 	}
@@ -253,16 +240,11 @@ public class SettingsFragment extends Fragment
 	{
 		switch (selectedColor)
 		{
-			case 0:
-				return R.style.OverlayPrimaryColorBlue;
-			case 1:
-				return R.style.OverlayPrimaryColorRed;
-			case 2:
-				return R.style.OverlayPrimaryColorGreen;
-			case 3:
-				return R.style.OverlayPrimaryColorYellow;
-			case 4:
-				return R.style.ThemeFightingRobot; // R.style.OverlayPrimaryColorPurple;
+			case 0: return R.style.OverlayPrimaryColorBlue;
+			case 1: return R.style.OverlayPrimaryColorRed;
+			case 2: return R.style.OverlayPrimaryColorGreen;
+			case 3: return R.style.OverlayPrimaryColorYellow;
+			case 4: return R.style.ThemeFightingRobot; // R.style.OverlayPrimaryColorPurple;
 		}
 		return -1;
 	}

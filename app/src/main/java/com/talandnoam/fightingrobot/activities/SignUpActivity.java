@@ -32,6 +32,9 @@ public class SignUpActivity extends AppCompatActivity
 	private int numberOfIncorrectAttempts;
 	private Intent toMainActivity;
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void onCreate (Bundle savedInstanceState)
 	{

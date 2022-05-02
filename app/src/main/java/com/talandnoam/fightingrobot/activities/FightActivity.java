@@ -29,6 +29,21 @@ import com.talandnoam.fightingrobot.databinding.ActivityFightBinding;
 
 import java.util.Objects;
 
+/**
+ * FightActivity - The activity that shows the fight between the two robots.
+ * <p>
+ *     This activity is responsible for the fight between the two robots.
+ *     It is responsible for the communication between the robot and the server.
+ * </p>
+ * <p>
+ *     The activity is created by the {@link com.talandnoam.fightingrobot.activities.MainActivity}
+ *     and is destroyed when the user returns to the {@link com.talandnoam.fightingrobot.activities.MainActivity}.
+ *     The activity is also destroyed when the user closes the app.
+ * </p>
+ * @author TalandNoam
+ * @version 1.0
+ * @since 2020-02-05
+ */
 public class FightActivity extends AppCompatActivity
 {
 	private DatabaseReference myRef2, myRef3, myRef4, myRef5, myRef6;
@@ -79,6 +94,7 @@ public class FightActivity extends AppCompatActivity
 	 *     The background color is saved in the shared preferences.
 	 *     If the background color is not saved in the shared preferences,
 	 *     the default background color is set to be black.
+	 * </p>
 	 */
 	private void handleSharedPreferences ()
 	{
@@ -96,12 +112,17 @@ public class FightActivity extends AppCompatActivity
 	 *     and it is used to initialize the Firebase database directory
 	 *     for this activity.
 	 *     The directory is initialized by calling {@link FirebaseManager#getDataRef(String)}
-	 *     with the directory name {@link #TAG}
-	 *     and the directory is stored in {@link #myRef2}
-	 *     and {@link #myRef3}
-	 *     and {@link #myRef4}
-	 *     and {@link #myRef5}
-	 *     and {@link #myRef6}
+	 *     with the directory name "processor".
+	 *     <br>
+	 *     and the directory is stored in {@link #myRef2} - the directory for left-joystick/angle.
+	 *     <br>
+	 *     and {@link #myRef3} - the directory for left-joystick/strength.
+	 *     <br>
+	 *     and {@link #myRef4} - the directory for right-joystick/x.
+	 *     <br>
+	 *     and {@link #myRef5} - the directory for right-joystick/y.
+	 *     <br>
+	 *     and {@link #myRef6} - the directory for processor/laser-emitter.
 	 * </p>
 	 */
 	private void initializeFirebaseDirectory ()
@@ -122,6 +143,7 @@ public class FightActivity extends AppCompatActivity
 	 *     This method is called in {@link #onCreate(Bundle)}
 	 *     and it is used to listen to the firebase directory
 	 *     and update the score of the match accordingly.
+	 * </p>
 	 */
 	private void setMatchScore ()
 	{
@@ -140,23 +162,26 @@ public class FightActivity extends AppCompatActivity
 
 	/**
 	 * This method is responsible for setting the listeners for the joystick and the shoot button.
+	 * <br>
 	 * The listeners are responsible for sending the data to the firebase directory.
-	 * The listeners are also responsible for updating the score.
-	 * The listeners are also responsible for updating the match result.
+	 * <br>
+	 * The listeners are also responsible for updating the score and the match result.
 	 */
 	@SuppressLint("ClickableViewAccessibility")
 	private void setListeners ()
 	{
-//		hitRef.addValueEventListener(new ValueEventListener()
-//		{
-//			@Override
-//			public void onDataChange (@NonNull DataSnapshot snapshot)
-//			{ handleHitEvent(snapshot); }
-//
-//			@Override
-//			public void onCancelled (@NonNull DatabaseError error)
-//			{ Log.d(TAG, "onCancelled:     " + error.getMessage()); }
-//		});
+/*
+		hitRef.addValueEventListener(new ValueEventListener()
+		{
+			@Override
+			public void onDataChange (@NonNull DataSnapshot snapshot)
+			{ handleHitEvent(snapshot); }
+
+			@Override
+			public void onCancelled (@NonNull DatabaseError error)
+			{ Log.d(TAG, "onCancelled:     " + error.getMessage()); }
+		});
+*/
 		binding.shootButton.setOnTouchListener((v, event) ->
 				sendToFirebaseWhilePressed(event));
 		binding.joystickLeft.setOnMoveListener((angle, strength) ->
@@ -215,6 +240,12 @@ public class FightActivity extends AppCompatActivity
 	}
 */
 
+	/**
+	 * Sends the fire-signal to the firebase database.
+	 *
+	 * @param event The event that triggered the fire-signal.
+	 * @return true if the event was a down event, false otherwise.
+	 */
 	private boolean sendToFirebaseWhilePressed (MotionEvent event)
 	{
 		switch (event.getAction())

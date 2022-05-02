@@ -93,6 +93,9 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 		//		return fragment;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onCreate (Bundle savedInstanceState)
 	{
@@ -104,6 +107,9 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public View onCreateView (@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{

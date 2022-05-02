@@ -89,7 +89,6 @@
                     android:maxLength="20"
                     android:paddingStart="30dp"
                     android:paddingEnd="0dp" />
-                <!--android:fontFamily="@font/google_sans_regular"-->
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.checkbox.MaterialCheckBox

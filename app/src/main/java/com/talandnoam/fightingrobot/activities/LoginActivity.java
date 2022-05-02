@@ -55,6 +55,9 @@ public class LoginActivity extends Activity
 	private ActivityLoginBinding binding;
 	private Intent toMainActivity;
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onStart ()
 	{
@@ -65,6 +68,9 @@ public class LoginActivity extends Activity
 			Commons.activityLauncher(this , toMainActivity);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void onCreate (Bundle savedInstanceState)
 	{
@@ -121,7 +127,7 @@ public class LoginActivity extends Activity
 			}
 		});
 
-		binding.password.addTextChangedListener(new TextValidator( binding.password)
+		binding.password.addTextChangedListener(new TextValidator(binding.password)
 		{
 			@Override
 			public void validate (TextView textView, String text)
@@ -278,6 +284,9 @@ public class LoginActivity extends Activity
 		startActivityForResult(signInIntent, RC_SIGN_IN);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onActivityResult (int requestCode, int resultCode, Intent data)
 	{

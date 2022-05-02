@@ -27,6 +27,9 @@ public class MainActivity extends AppCompatActivity
 	private PrefsManager prefsManager;
 	private ActionBar actionBar;
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	protected void onCreate (Bundle savedInstanceState)
 	{
@@ -91,6 +94,9 @@ public class MainActivity extends AppCompatActivity
 		return true;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onBackPressed()
 	{

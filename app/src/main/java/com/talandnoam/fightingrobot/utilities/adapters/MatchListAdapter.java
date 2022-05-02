@@ -15,11 +15,10 @@ import android.widget.TextView;
 import androidx.cardview.widget.CardView;
 
 import com.bumptech.glide.Glide;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.talandnoam.fightingrobot.R;
 import com.talandnoam.fightingrobot.classes.Commons;
+import com.talandnoam.fightingrobot.classes.FirebaseManager;
 import com.talandnoam.fightingrobot.classes.Match;
 
 import java.util.List;
@@ -29,16 +28,15 @@ public class MatchListAdapter extends ArrayAdapter<Match>
 {
 	private TextView headerTextView, matchWinner, matchDate, matchTime, matchType, matchFormat, matchResult;
 	private static final String TAG = "MatchListAdapter";
-	private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-
-
 
 	public MatchListAdapter(Context context, List<Match> objects)
 	{
 		super(context, 0, objects);
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent)
 	{
@@ -58,8 +56,7 @@ public class MatchListAdapter extends ArrayAdapter<Match>
 		cardView.setOnClickListener(view -> handleExpandAndCollapse(cardView, arrow, hiddenView));
 		arrow.setOnClickListener(view -> handleExpandAndCollapse(cardView, arrow, hiddenView));
 		Log.d(TAG, "getView: " + match.getId());
-		StorageReference imageReference = FirebaseStorage.getInstance().getReference("users/" + mAuth.getUid() + "/matches/" + match.getId());
-		View finalConvertView = convertView;
+		StorageReference imageReference = FirebaseManager.getStorageRef("users/" + FirebaseManager.getUid() + "/matches/" + match.getId());
 		imageReference.getDownloadUrl()
 				.addOnSuccessListener(uri ->
 						Glide
@@ -72,11 +69,23 @@ public class MatchListAdapter extends ArrayAdapter<Match>
 		return convertView;
 	}
 
+	/**
+	 * This method handles the expand and collapse of the hiddenView.
+	 * <p>
+	 *     If the CardView is already expanded, set its visibility
+	 *     to gone and change the expand less icon to expand more.
+	 *     <br>
+	 *     If the CardView is not expanded, set its visibility
+	 *     to visible and change the expand more icon to expand less.
+	 * </p>
+	 * @param cardView - the CardView that is clicked.
+	 * @param arrow - the arrow button that is clicked.
+	 * @param hiddenView - the hidden view that will be shown or hidden.
+	 */
 	private void handleExpandAndCollapse (CardView cardView, ImageView arrow, LinearLayout hiddenView)
 	{
 		Commons.vibrate();
-		// If the CardView is already expanded, set its visibility
-		// to gone and change the expand less icon to expand more.
+
 		if (hiddenView.getVisibility() == View.VISIBLE)
 			handleAnimation(cardView, arrow, hiddenView, View.GONE, R.drawable.ic_arrow_down);
 		// If the CardView is not expanded, set its visibility

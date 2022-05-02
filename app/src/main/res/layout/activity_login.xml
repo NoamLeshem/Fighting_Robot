@@ -7,17 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".activities.LoginActivity">
 
-    <!--com.google.android.material.appbar.MaterialToolbar
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/MaterialToolbar"
-        style="@style/Widget.MaterialComponents.Toolbar.Primary"
-        app:title="@string/app_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-    </com.google.android.material.appbar.MaterialToolbar-->
-
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

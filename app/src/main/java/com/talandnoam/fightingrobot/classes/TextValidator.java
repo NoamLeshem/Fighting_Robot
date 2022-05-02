@@ -14,15 +14,24 @@ public abstract class TextValidator implements TextWatcher
 
 	public abstract void validate(TextView textView, String text);
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	final public void afterTextChanged(Editable s) {
 		String text = this.textView.getText().toString().trim();
 		validate(this.textView, text);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	final public void beforeTextChanged(CharSequence s, int start, int count, int after) { /* Don't care */ }
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	final public void onTextChanged(CharSequence s, int start, int before, int count) { /* Don't care */ }
 }

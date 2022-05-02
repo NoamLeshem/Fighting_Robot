@@ -71,6 +71,9 @@ public class HistoryFragment extends Fragment
 		return fragment;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onCreate (Bundle savedInstanceState)
 	{
@@ -82,6 +85,9 @@ public class HistoryFragment extends Fragment
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
 	{
@@ -106,6 +112,7 @@ public class HistoryFragment extends Fragment
 		extractAllMatches(allMatchesList);
 		return rootView;
 	}
+
 	private void extractAllMatches (List<Match> allMatchesList)
 	{
 		FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -125,12 +132,12 @@ public class HistoryFragment extends Fragment
 		});
 	}
 
+	/**
+	 * This method performs the actual data-refresh operation.
+	 * The method calls setRefreshing(false) when it's finished.
+	*/
 	private void myUpdateOperation ()
 	{
-		// This method performs the actual data-refresh operation.
-		// The method calls setRefreshing(false) when it's finished.
-		// Do an update
-		// extractAllMatches(allMatchesList);
 		Log.i(TAG, "Performing update");
 		mySwipeRefreshLayout.setRefreshing(false);
 	}
