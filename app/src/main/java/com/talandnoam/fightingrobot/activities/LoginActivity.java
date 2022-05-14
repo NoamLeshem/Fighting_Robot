@@ -47,6 +47,7 @@ import java.util.regex.Pattern;
 
 public class LoginActivity extends Activity
 {
+	private final Commons commons = new Commons(getApplicationContext());
 	private static final String TAG = "LoginActivity";
 	private boolean isEmailValid = false, isPasswordValid = false;
 	private static final int RC_SIGN_IN = 9001;
@@ -65,7 +66,7 @@ public class LoginActivity extends Activity
 
 		// Check if user is signed in (non-null) and update UI accordingly.
 		if (FirebaseManager.isSignedIn())
-			Commons.activityLauncher(this , toMainActivity);
+			commons.activityLauncher(this , toMainActivity);
 	}
 
 	/**
@@ -141,7 +142,7 @@ public class LoginActivity extends Activity
 		});
 		Intent toSignUp = new Intent(this, SignUpActivity.class);
 		binding.newAccount.setOnClickListener(view ->
-				Commons.activityLauncher(this, toSignUp));
+				commons.activityLauncher(this, toSignUp));
 		binding.showPassword.setOnCheckedChangeListener((compoundButton, isChecked) ->
 				changePasswordState(isChecked));
 		binding.loginButton.setOnClickListener(view -> facebookLogin());
@@ -152,7 +153,7 @@ public class LoginActivity extends Activity
 
 	private void validateEmailOrPassword (TextInputLayout inputLayout, String text, int resourceID, boolean isEmail)
 	{
-		Commons.vibrate();
+		commons.vibrate();
 		if (isEmail) isEmailValid = isTextValidUsingRegex(text, true);
 		else isPasswordValid = isTextValidUsingRegex(text, false);
 		if (isTextValidUsingRegex(text, isEmail))
@@ -194,7 +195,7 @@ public class LoginActivity extends Activity
 
 	private void showPasswordRules (View view)
 	{
-		Commons.vibrate();
+		commons.vibrate();
 		MaterialAlertDialogBuilder builder =
 				new MaterialAlertDialogBuilder(view.getContext());
 		builder.setTitle(R.string.password_rules)
@@ -207,7 +208,7 @@ public class LoginActivity extends Activity
 
 	private void changePasswordState (boolean isChecked)
 	{
-		Commons.vibrate();
+		commons.vibrate();
 		binding.password.setTransformationMethod(
 				isChecked ?
 						HideReturnsTransformationMethod.getInstance() :
@@ -217,7 +218,7 @@ public class LoginActivity extends Activity
 
 	private void login ()
 	{
-		Commons.vibrate();
+		commons.vibrate();
 		binding.userAndPasswordLogin.setEnabled(false);
 		String emailAddress = binding.username.getText().toString().trim();
 		String pass =  binding.password.getText().toString().trim();
@@ -236,7 +237,7 @@ public class LoginActivity extends Activity
 
 	private void facebookLogin ()
 	{
-		Commons.vibrate();
+		commons.vibrate();
 		binding.linearProgressIndicator.setVisibility(View.VISIBLE);
 		LoginManager.getInstance()
 				.logInWithReadPermissions(this, Arrays.asList("email", "public_profile"));
@@ -268,7 +269,7 @@ public class LoginActivity extends Activity
 
 	private void googleLogin ()
 	{
-		Commons.vibrate();
+		commons.vibrate();
 		binding.linearProgressIndicator.setVisibility(View.VISIBLE);
 		// [START config_sign_in]
 		// Configure Google Sign In
@@ -332,12 +333,12 @@ public class LoginActivity extends Activity
 		{
 			// If sign in fails, display a message to the user.
 			Log.w(TAG, "handleTaskResult:failure", task.getException());
-			Commons.showToast("Authentication failed.");
+			commons.showToast("Authentication failed.");
 			binding.linearProgressIndicator.setVisibility(View.GONE);
 			if (Objects.requireNonNull(Objects.requireNonNull(task.getException())
 					.getMessage())
 					.equals("The password is invalid or the user does not have a password."))
-				Commons.makeSnackbar(binding.userAndPasswordLogin, R.string.wrong_password)
+				commons.makeSnackbar(binding.userAndPasswordLogin, R.string.wrong_password)
 						.setAction(R.string.clear, view ->  binding.password.setText(""))
 						.show();
 			binding.userAndPasswordLogin.setEnabled(true);
@@ -356,6 +357,6 @@ public class LoginActivity extends Activity
 		DatabaseReference myRef3 = FirebaseManager.getDataRef("processor/currentUser");
 		myRef2.setValue(user.getEmail());
 		myRef3.setValue(user.getUid());
-		Commons.activityLauncher(this, toMainActivity);
+		commons.activityLauncher(this, toMainActivity);
 	}
 }

@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 
 public class SignUpActivity extends AppCompatActivity
 {
+	private final Commons commons = new Commons(getApplicationContext());
 	private static final String TAG = "SignUpActivity";
 	private ActivitySignUpBinding binding;
 	private boolean isEmailValid, isPasswordValid;
@@ -96,12 +97,12 @@ public class SignUpActivity extends AppCompatActivity
 		Intent toLogin = new Intent(this, LoginActivity.class);
 		binding.signUp
 				.setOnClickListener(view ->
-						Commons.activityLauncher(this, toLogin));
+						commons.activityLauncher(this, toLogin));
 	}
 
 	private void validateEmailOrPassword (TextInputLayout inputLayout, String text, int resourceID, boolean isEmail)
 	{
-		Commons.vibrate();
+		commons.vibrate();
 		if (isEmail) isEmailValid = isTextValidUsingRegex(text, true);
 		else isPasswordValid = isTextValidUsingRegex(text, false);
 		if (isTextValidUsingRegex(text, isEmail))
@@ -143,7 +144,7 @@ public class SignUpActivity extends AppCompatActivity
 
 	private void showPasswordRules (View view)
 	{
-		Commons.vibrate();
+		commons.vibrate();
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(view.getContext());
 		builder.setTitle(R.string.password_rules)
 				.setMessage(getString(R.string.password_rule) + "!@#&()–[{}]:;',?/*~$^+=<>")
@@ -155,7 +156,7 @@ public class SignUpActivity extends AppCompatActivity
 
 	private void changePasswordState (boolean isChecked)
 	{
-		Commons.vibrate();
+		commons.vibrate();
 		binding.password.setTransformationMethod(
 				isChecked ?
 						HideReturnsTransformationMethod.getInstance() :
@@ -165,7 +166,7 @@ public class SignUpActivity extends AppCompatActivity
 
 	private void login ()
 	{
-		Commons.vibrate();
+		commons.vibrate();
 		binding.userAndPasswordSignup.setEnabled(false);
 		String emailAddress = binding.username.getText().toString().trim();
 		String pass = binding.password.getText().toString().trim();
@@ -193,10 +194,10 @@ public class SignUpActivity extends AppCompatActivity
 				// If sign in fails, display a message to the user.
 				if (task.getException().getMessage()
 						.equals("The email address is already in use by another account."))
-					Commons.makeSnackbar(binding.userAndPasswordSignup, R.string.email_occupied)
+					commons.makeSnackbar(binding.userAndPasswordSignup, R.string.email_occupied)
 							.setAction("clear",view -> binding.username.setText(""))
 							.show();
-				Commons.showToast(R.string.auth_failed);
+				commons.showToast(R.string.auth_failed);
 				binding.linearProgressIndicator.setVisibility(View.GONE);
 				binding.userAndPasswordSignup.setEnabled(true);
 				// signIn(email, password);
@@ -209,7 +210,7 @@ public class SignUpActivity extends AppCompatActivity
 	{
 		sendUserData(user);
 		binding.linearProgressIndicator.setVisibility(View.GONE);
-		Commons.activityLauncher(this, toMainActivity);
+		commons.activityLauncher(this, toMainActivity);
 	}
 
 	private void sendUserData (FirebaseUser user)

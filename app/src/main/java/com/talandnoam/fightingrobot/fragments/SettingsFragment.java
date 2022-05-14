@@ -28,6 +28,7 @@ import com.talandnoam.fightingrobot.databinding.FragmentSettingsBinding;
  */
 public class SettingsFragment extends Fragment
 {
+	private final Commons commons = new Commons(getContext());
 	private static final String TAG = "SettingsFragment";
 	private FragmentSettingsBinding binding;
 	private LanguageManager languageManager;
@@ -115,7 +116,7 @@ public class SettingsFragment extends Fragment
 
 	private void chooseLanguage (View view)
 	{
-		Commons.vibrate();
+		commons.vibrate();
 		languages = new String[]{"English", "Hebrew"};
 		int checkedItem = prefsManager.getPrefInt(PrefsManager.KEY_LANGUAGE_ITEM, 0);
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(view.getContext());
@@ -124,7 +125,7 @@ public class SettingsFragment extends Fragment
 						changeLanguage(selectedItem))
 				.setPositiveButton(R.string.ok, (dialogInterface, i) ->
 				{
-					Commons.vibrate();
+					commons.vibrate();
 					refreshActivity();
 				})
 				.setIcon(R.drawable.ic_palette)
@@ -147,7 +148,7 @@ public class SettingsFragment extends Fragment
 
 	private void switchVibrationMode (SwitchMaterial vibrationSwitch)
 	{
-		Commons.showToast(getString(R.string.vibe_is) + " " + (vibrationSwitch.isChecked() ? getString(R.string.on) : getString(R.string.off)));
+		commons.showToast(getString(R.string.vibe_is) + " " + (vibrationSwitch.isChecked() ? getString(R.string.on) : getString(R.string.off)));
 		prefsManager.setPref(PrefsManager.KEY_VIBRATION, vibrationSwitch.isChecked());
 		requireActivity().recreate();
 	}
@@ -160,13 +161,13 @@ public class SettingsFragment extends Fragment
 
 	private void clearData (View view)
 	{
-		Commons.vibrate();
+		commons.vibrate();
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(view.getContext());
 		builder.setTitle(R.string.clear_data)
 				.setMessage(R.string.are_you_sure)
 				.setPositiveButton(R.string.ok, (dialogInterface, i) ->
 				{
-					Commons.vibrate();
+					commons.vibrate();
 					prefsManager.clearPref();
 					DatabaseReference myRef1 = FirebaseManager.getDataRef("users/" + FirebaseManager.getUid() + "/match_history");
 					myRef1.removeValue();
@@ -180,7 +181,7 @@ public class SettingsFragment extends Fragment
 
 	private void chooseBackgroundColor (View view)
 	{
-		Commons.vibrate();
+		commons.vibrate();
 		String[] colors = getResources().getStringArray(R.array.colors);
 		int checkedItem = prefsManager.getPrefInt(PrefsManager.KEY_ITEM_BACKGROUND, 1);
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(view.getContext());
@@ -189,7 +190,7 @@ public class SettingsFragment extends Fragment
 						changeBackgroundColor(selectedItem))
 				.setPositiveButton(R.string.ok, (dialogInterface, i) ->
 				{
-					Commons.vibrate();
+					commons.vibrate();
 					requireActivity().recreate();
 				})
 				.setIcon(R.drawable.ic_palette)
@@ -199,7 +200,7 @@ public class SettingsFragment extends Fragment
 
 	private void changeBackgroundColor (int selectedColor)
 	{
-		Commons.vibrate();
+		commons.vibrate();
 		int backgroundId = getBackgroundColor(selectedColor);
 		prefsManager.setPref(PrefsManager.KEY_ITEM_BACKGROUND, selectedColor);
 		prefsManager.setPref(PrefsManager.KEY_BACKGROUND, backgroundId);
@@ -228,7 +229,7 @@ public class SettingsFragment extends Fragment
 
 	private void changePrimaryColor (int selectedColor)
 	{
-		Commons.vibrate();
+		commons.vibrate();
 		Resources.Theme theme = requireContext().getTheme();
 		int themeId = getThemeId(selectedColor);
 		theme.applyStyle(themeId, true);
@@ -251,7 +252,7 @@ public class SettingsFragment extends Fragment
 
 	private void choosePrimaryColor (View view)
 	{
-		Commons.vibrate();
+		commons.vibrate();
 		String[] colors = {"blue", "red", "green", "yellow", "purple"};
 		int checkedItem = prefsManager.getPrefInt(PrefsManager.KEY_ITEM, 4);
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(view.getContext());
@@ -260,7 +261,7 @@ public class SettingsFragment extends Fragment
 						changePrimaryColor(selectedItem))
 				.setPositiveButton("ok", (dialogInterface, i) ->
 				{
-					Commons.vibrate();
+					commons.vibrate();
 					requireActivity().recreate();
 				})
 				.setIcon(R.drawable.ic_palette)
@@ -270,12 +271,12 @@ public class SettingsFragment extends Fragment
 
 	private void logoutVerify (View view)
 	{
-		Commons.vibrate();
+		commons.vibrate();
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(view.getContext());
 		builder.setTitle(R.string.confirm_logout)
 				.setMessage(R.string.logout_confirm)
 				.setPositiveButton(R.string.yes, (dialogInterface, i) -> logout())
-				.setNegativeButton(R.string.cancel,(dialogInterface, i) -> Commons.vibrate())
+				.setNegativeButton(R.string.cancel,(dialogInterface, i) -> commons.vibrate())
 				.setIcon(R.drawable.ic_logout)
 				.setCancelable(true)
 				.show();
@@ -283,7 +284,7 @@ public class SettingsFragment extends Fragment
 
 	private void logout ()
 	{
-		Commons.vibrate();
+		commons.vibrate();
 		LoginManager.getInstance().logOut();
 		FirebaseManager.signOut();
 

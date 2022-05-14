@@ -29,6 +29,7 @@ import com.talandnoam.fightingrobot.classes.NotificationHelper;
 
 public class BackgroundService extends Service
 {
+	private final Commons commons = new Commons(getApplicationContext());
 	private static final String TAG = "BackgroundService";
 
 	@Nullable
@@ -48,11 +49,11 @@ public class BackgroundService extends Service
 		{
 			case "ACTION_START_FOREGROUND_SERVICE":
 				startForegroundService();
-				Commons.showToast("Foreground service is started.");
+				commons.showToast("Foreground service is started.");
 				break;
 			case "ACTION_STOP_FOREGROUND_SERVICE":
 				stopForegroundService();
-				Commons.showToast("Foreground service is stopped.");
+				commons.showToast("Foreground service is stopped.");
 				break;
 		}
 		return super.onStartCommand(intent, flags, startId);
@@ -122,7 +123,7 @@ public class BackgroundService extends Service
 		builder.setTitle(R.string.you_lost)
 				.setMessage(R.string.lose_messege)
 				.setNegativeButton(R.string.ok, (dialogInterface, i) ->
-						Commons.activityLauncher(this, new Intent(this, MainActivity.class)))
+						commons.activityLauncher(this, new Intent(this, MainActivity.class)))
 				.setCancelable(false)
 				.show();
 		NotificationHelper.createNotification( "You Lost!\nYou lost the match.\n", this);

@@ -27,6 +27,7 @@ import java.util.List;
 public class MatchListAdapter extends ArrayAdapter<Match>
 {
 	private TextView headerTextView, matchWinner, matchDate, matchTime, matchType, matchFormat, matchResult;
+	private final Commons commons = new Commons(getContext());
 	private static final String TAG = "MatchListAdapter";
 
 	public MatchListAdapter(Context context, List<Match> objects)
@@ -84,8 +85,7 @@ public class MatchListAdapter extends ArrayAdapter<Match>
 	 */
 	private void handleExpandAndCollapse (CardView cardView, ImageView arrow, LinearLayout hiddenView)
 	{
-		Commons.vibrate();
-
+		commons.vibrate();
 		if (hiddenView.getVisibility() == View.VISIBLE)
 			handleAnimation(cardView, arrow, hiddenView, View.GONE, R.drawable.ic_arrow_down);
 		// If the CardView is not expanded, set its visibility

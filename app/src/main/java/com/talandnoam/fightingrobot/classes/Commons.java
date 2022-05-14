@@ -1,7 +1,5 @@
 package com.talandnoam.fightingrobot.classes;
 
-import static com.facebook.FacebookSdk.getApplicationContext;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -12,46 +10,54 @@ import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 
-public final class Commons
+public class Commons
 {
-	private static final PrefsManager prefsManager = new PrefsManager(getApplicationContext());
-	private static final Vibrator vibe = (Vibrator) getApplicationContext().getSystemService(Context.VIBRATOR_SERVICE);
+	private final Context context;
+	private final PrefsManager prefsManager;
+	private final Vibrator vibe;
 
-	public static void vibrate ()
+	public Commons(Context context)
 	{
-		if (prefsManager.getPrefBoolean(PrefsManager.KEY_VIBRATION))
-			vibe.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE));
+		this.context = context;
+		prefsManager = new PrefsManager(context);
+		vibe = (Vibrator) context.getSystemService(Context.VIBRATOR_SERVICE);
 	}
 
-	public static void activityLauncher (Activity activity, Intent intent)
+	public void vibrate ()
+	{
+		if (this.prefsManager.getPrefBoolean(PrefsManager.KEY_VIBRATION))
+			this.vibe.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE));
+	}
+
+	public void activityLauncher (Activity activity, Intent intent)
 	{
 		vibrate();
 		activity.finish();
 		activity.startActivity(intent);
 	}
 
-	public static void activityLauncher (Context context, Intent intent)
+	public void activityLauncher (Context context, Intent intent)
 	{
 		vibrate();
 		context.startActivity(intent);
 	}
 
-	public static void showToast(String message)
+	public void showToast(String message)
 	{
-		Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+		Toast.makeText(this.context, message, Toast.LENGTH_SHORT).show();
 	}
 
-	public static void showToast(int message)
+	public void showToast(int message)
 	{
-		Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+		Toast.makeText(this.context, message, Toast.LENGTH_SHORT).show();
 	}
 
-	public static Snackbar makeSnackbar(View view, String message)
+	public Snackbar makeSnackbar(View view, String message)
 	{
 		return Snackbar.make(view, message, Snackbar.LENGTH_SHORT);
 	}
 
-	public static Snackbar makeSnackbar(View view, int message)
+	public Snackbar makeSnackbar(View view, int message)
 	{
 		return Snackbar.make(view, message, Snackbar.LENGTH_SHORT);
 	}

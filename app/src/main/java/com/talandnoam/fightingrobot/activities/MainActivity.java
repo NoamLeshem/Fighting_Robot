@@ -21,6 +21,7 @@ import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity
 {
+	private final Commons commons = new Commons(getApplicationContext());
 	private boolean doubleBackToExitPressedOnce = false;
 	private FragmentManager fragmentManager;
 	private ActivityMainBinding binding;
@@ -73,7 +74,7 @@ public class MainActivity extends AppCompatActivity
 	{
 		int titleId = R.string.fight;
 
-		Commons.vibrate();
+		commons.vibrate();
 		Fragment selectedFragment = new Fragment();
 		if (itemId == R.id.history) {
 			selectedFragment = new HistoryFragment();
@@ -105,7 +106,7 @@ public class MainActivity extends AppCompatActivity
 			fragmentManager.popBackStack();
 		else if (!doubleBackToExitPressedOnce) {
 			this.doubleBackToExitPressedOnce = true;
-			Commons.showToast(R.string.press_back_again);
+			commons.showToast(R.string.press_back_again);
 			new Handler().postDelayed(() -> doubleBackToExitPressedOnce = false, 2000);
 		} else
 			super.onBackPressed();

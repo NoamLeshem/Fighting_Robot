@@ -48,6 +48,7 @@ import java.util.Objects;
  */
 public class FightFragment extends Fragment // implements IOnBackPressed
 {
+	private final Commons commons = new Commons(getContext());
 	private static final String TAG = "FightFragment";
 	protected final BetterActivityResult<Intent, ActivityResult> activityLauncher = BetterActivityResult.registerActivityForResult(this);
 	// TODO: Rename parameter arguments, choose names that match
@@ -132,8 +133,8 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 	{
 		binding.autoModeButton.setOnClickListener(view ->
 		{
-			Commons.vibrate();
-			Commons.makeSnackbar(rootView, "autoModeActivityLauncher")
+			commons.vibrate();
+			commons.makeSnackbar(rootView, "autoModeActivityLauncher")
 					.setAnchorView(R.id.bottom_navigation)
 					.show();
 		});
@@ -168,13 +169,13 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 	{
 		chooserBinding = FightChooserBinding.inflate(getLayoutInflater());
 		getSpinnerAdapter(chooserBinding.matchTypeSpinner, chooserBinding.matchLengthSpinner, chooserBinding.matchFormatSpinner);
-		Commons.vibrate();
+		commons.vibrate();
 		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(requireContext());
 		AlertDialog myDialog = builder
 				.setTitle(R.string.prep_the_fight)
 				.setView(chooserBinding.getRoot())
 				.setCancelable(true)
-				.setNeutralButton(R.string.cancel, (dialog, which) -> Commons.vibrate())
+				.setNeutralButton(R.string.cancel, (dialog, which) -> commons.vibrate())
 				.show();
 		chooserBinding.startButton.setOnClickListener(view ->
 		{
@@ -182,7 +183,7 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 			String length = chooserBinding.matchLengthSpinner.getSelectedItem().toString().trim();
 			String format = chooserBinding.matchFormatSpinner.getSelectedItem().toString().trim();
 			if (type.equals("match type") || length.equals("match length") || format.equals("match format") || matchBitmap == null)
-				Commons.makeSnackbar(view, R.string.fill_all).show();
+				commons.makeSnackbar(view, R.string.fill_all).show();
 			else
 			{
 				startFight(type, length, format);
@@ -253,11 +254,11 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 		if (uploadTask != null)
 			uploadTask
 					.addOnFailureListener(e ->
-							Commons.showToast("Image upload NOT successfully"))
+							commons.showToast("Image upload NOT successfully"))
 					.addOnSuccessListener(taskSnapshot ->
-							Commons.showToast("Image upload successfully"));
+							commons.showToast("Image upload successfully"));
 		else
-			Commons.showToast("Please upload a photo!");
+			commons.showToast("Please upload a photo!");
 	}
 
 	private void startFight (String type, String length, String format)
