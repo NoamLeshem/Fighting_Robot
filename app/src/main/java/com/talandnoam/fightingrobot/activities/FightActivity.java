@@ -191,8 +191,8 @@ public class FightActivity extends AppCompatActivity
 		});
 		binding.joystickRight.setOnMoveListener((angle, strength) ->
 		{
-			double x = Math.cos(Math.toRadians(angle)) * (strength * 0.9) + 90;
-			double y = Math.sin(Math.toRadians(angle)) * (strength * 0.9) + 90;
+			double x = (Math.cos(Math.toRadians(angle)) * (strength * 0.9)) / 2 + 90;
+			double y = (Math.sin(Math.toRadians(angle)) * (strength * 0.9)) / 2 + 90;
 			myRef4.setValue((int) x);
 			myRef5.setValue((int) y);
 		});
