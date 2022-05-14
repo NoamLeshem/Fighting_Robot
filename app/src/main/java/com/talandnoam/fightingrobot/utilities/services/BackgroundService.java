@@ -29,7 +29,7 @@ import com.talandnoam.fightingrobot.classes.NotificationHelper;
 
 public class BackgroundService extends Service
 {
-	private final Commons commons = new Commons(getApplicationContext());
+	private Commons commons;
 	private static final String TAG = "BackgroundService";
 
 	@Nullable
@@ -61,6 +61,7 @@ public class BackgroundService extends Service
 
 	private void startForegroundService ()
 	{
+		commons = new Commons(getApplicationContext());
 		Log.d("FOREGROUND_SERVICE", "Start foreground service.");
 		DatabaseReference hitRef = FirebaseManager.getDataRef("processor/isHit");
 		hitRef.addValueEventListener(new ValueEventListener()

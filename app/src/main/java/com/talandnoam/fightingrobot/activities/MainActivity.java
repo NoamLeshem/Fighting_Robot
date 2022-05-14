@@ -21,7 +21,7 @@ import java.util.Objects;
 
 public class MainActivity extends AppCompatActivity
 {
-	private final Commons commons = new Commons(getApplicationContext());
+	private Commons commons;
 	private boolean doubleBackToExitPressedOnce = false;
 	private FragmentManager fragmentManager;
 	private ActivityMainBinding binding;
@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity
 	private void initializeVariables ()
 	{
 		fragmentManager = getSupportFragmentManager();
+		commons = new Commons(this);
 		actionBar = getSupportActionBar();
 	}
 

@@ -27,7 +27,7 @@ import java.util.List;
 public class MatchListAdapter extends ArrayAdapter<Match>
 {
 	private TextView headerTextView, matchWinner, matchDate, matchTime, matchType, matchFormat, matchResult;
-	private final Commons commons = new Commons(getContext());
+	private Commons commons;
 	private static final String TAG = "MatchListAdapter";
 
 	public MatchListAdapter(Context context, List<Match> objects)
@@ -41,6 +41,7 @@ public class MatchListAdapter extends ArrayAdapter<Match>
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent)
 	{
+		commons = new Commons(getContext());
 //		if (convertView == null)
 //			binding = ExpandableCardViewBinding.inflate(LayoutInflater.from(getContext()), parent, false);
 //		convertView = binding.getRoot();

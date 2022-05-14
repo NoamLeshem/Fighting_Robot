@@ -28,7 +28,7 @@ import com.talandnoam.fightingrobot.databinding.FragmentSettingsBinding;
  */
 public class SettingsFragment extends Fragment
 {
-	private final Commons commons = new Commons(getContext());
+	private Commons commons;
 	private static final String TAG = "SettingsFragment";
 	private FragmentSettingsBinding binding;
 	private LanguageManager languageManager;
@@ -100,6 +100,7 @@ public class SettingsFragment extends Fragment
 		binding.getRoot().setBackgroundColor(requireActivity().getColor(backgroundColor));
 		languageManager = new LanguageManager(requireActivity());
 		languageManager.setLanguage(prefsManager.getPrefString(PrefsManager.KEY_LANGUAGE, "English"));
+		commons = new Commons(requireContext());
 	}
 
 	private void setListeners ()

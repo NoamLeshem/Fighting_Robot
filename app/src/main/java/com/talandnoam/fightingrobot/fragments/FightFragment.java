@@ -48,7 +48,7 @@ import java.util.Objects;
  */
 public class FightFragment extends Fragment // implements IOnBackPressed
 {
-	private final Commons commons = new Commons(getContext());
+	private Commons commons;
 	private static final String TAG = "FightFragment";
 	protected final BetterActivityResult<Intent, ActivityResult> activityLauncher = BetterActivityResult.registerActivityForResult(this);
 	// TODO: Rename parameter arguments, choose names that match
@@ -127,6 +127,7 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 		PrefsManager prefsManager = new PrefsManager(requireContext());
 		int backgroundColor = prefsManager.getPrefInt(PrefsManager.KEY_BACKGROUND, R.color.black);
 		rootView.setBackgroundColor(requireActivity().getColor(backgroundColor));
+		commons = new Commons(requireContext());
 	}
 
 	private void setListeners (View rootView)

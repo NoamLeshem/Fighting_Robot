@@ -47,7 +47,6 @@ import java.util.regex.Pattern;
 
 public class LoginActivity extends Activity
 {
-	private final Commons commons = new Commons(getApplicationContext());
 	private static final String TAG = "LoginActivity";
 	private boolean isEmailValid = false, isPasswordValid = false;
 	private static final int RC_SIGN_IN = 9001;
@@ -55,6 +54,7 @@ public class LoginActivity extends Activity
 	private int numberOfIncorrectAttempts;
 	private ActivityLoginBinding binding;
 	private Intent toMainActivity;
+	private Commons commons;
 
 	/**
 	 * {@inheritDoc}
@@ -102,6 +102,7 @@ public class LoginActivity extends Activity
 	{
 		toMainActivity = new Intent(this, MainActivity.class);
 		callbackManager = CallbackManager.Factory.create();
+		commons = new Commons(this);
 	}
 
 	private void handleSharedPreferences ()

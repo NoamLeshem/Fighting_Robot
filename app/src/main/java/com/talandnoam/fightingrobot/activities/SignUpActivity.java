@@ -26,12 +26,12 @@ import java.util.regex.Pattern;
 
 public class SignUpActivity extends AppCompatActivity
 {
-	private final Commons commons = new Commons(getApplicationContext());
 	private static final String TAG = "SignUpActivity";
 	private ActivitySignUpBinding binding;
 	private boolean isEmailValid, isPasswordValid;
 	private int numberOfIncorrectAttempts;
 	private Intent toMainActivity;
+	private Commons commons;
 
 	/**
 	 * {@inheritDoc}
@@ -52,6 +52,7 @@ public class SignUpActivity extends AppCompatActivity
 	private void initVariables ()
 	{
 		toMainActivity = new Intent(this, MainActivity.class);
+		commons = new Commons(this);
 	}
 
 	private void handleSharedPreferences ()
