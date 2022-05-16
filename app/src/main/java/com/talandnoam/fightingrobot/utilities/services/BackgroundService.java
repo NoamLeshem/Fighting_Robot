@@ -120,7 +120,7 @@ public class BackgroundService extends Service
 
 	private void notifyLostMessage ()
 	{
-		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(this);
+		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(FightActivity.binding.getRoot().getContext());
 		builder.setTitle(R.string.you_lost)
 				.setMessage(R.string.lose_messege)
 				.setNegativeButton(R.string.ok, (dialogInterface, i) ->
