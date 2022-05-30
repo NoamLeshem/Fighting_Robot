@@ -81,4 +81,5 @@
     <string name="cancel">ביטול</string>
     <string name="fill_all">אנא מלא את כל השדות</string>
     <string name="vibe_is">הרטט</string>
+    <string name="automatic_mode">מצב אוטומטי</string>
 </resources>

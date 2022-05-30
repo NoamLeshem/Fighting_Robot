@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.facebook.FacebookSdk;
 import com.facebook.login.LoginManager;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.switchmaterial.SwitchMaterial;
@@ -286,6 +287,8 @@ public class SettingsFragment extends Fragment
 	private void logout ()
 	{
 		commons.vibrate();
+		FacebookSdk.setClientToken(getString(R.string.facebook_app_id));
+		FacebookSdk.sdkInitialize(this.requireContext());
 		LoginManager.getInstance().logOut();
 		FirebaseManager.signOut();
 

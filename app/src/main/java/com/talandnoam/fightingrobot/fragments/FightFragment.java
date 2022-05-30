@@ -117,7 +117,7 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 		binding = FragmentFightBinding.inflate(inflater, container, false);
 
 		handleSharedPreferences(binding.getRoot());
-		setListeners(binding.getRoot());
+		setListeners();
 
 		return binding.getRoot();
 	}
@@ -130,15 +130,8 @@ public class FightFragment extends Fragment // implements IOnBackPressed
 		commons = new Commons(requireContext());
 	}
 
-	private void setListeners (View rootView)
+	private void setListeners ()
 	{
-		binding.autoModeButton.setOnClickListener(view ->
-		{
-			commons.vibrate();
-			commons.makeSnackbar(rootView, "autoModeActivityLauncher")
-					.setAnchorView(R.id.bottom_navigation)
-					.show();
-		});
 		binding.firebaseButton.setOnClickListener(view -> chooseFightingRules());
 	}
 

@@ -10,10 +10,10 @@
         <item>match format</item>
         <item>first to</item>
         <item>best of</item>
-        <item>live steal of</item>
-        <item>tic tac toe</item> <!-- TODO: add TicTacToe format -->
-        <item>tournament</item> <!-- TODO: add Tournament format -->
-        <item>until death</item>
+        <!--item>live steal of</item>
+        <item>tic tac toe</item> - TODO: add TicTacToe format
+        <item>tournament</item> < TODO: add Tournament format
+        <itemuntil death</item-->
     </string-array>
 
     <string-array name="match_length">

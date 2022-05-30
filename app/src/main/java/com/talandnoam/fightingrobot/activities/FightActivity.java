@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -22,6 +23,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.talandnoam.fightingrobot.R;
+import com.talandnoam.fightingrobot.classes.Commons;
 import com.talandnoam.fightingrobot.classes.FirebaseManager;
 import com.talandnoam.fightingrobot.classes.Match;
 import com.talandnoam.fightingrobot.classes.PrefsManager;
@@ -46,10 +48,11 @@ import java.util.Objects;
  */
 public class FightActivity extends AppCompatActivity
 {
-	private DatabaseReference myRef2, myRef3, myRef4, myRef5, myRef6;
+	private DatabaseReference myRef2, myRef3, myRef4, myRef5, myRef6, myRef7, myRef8;
 	private static final String TAG = "FightActivity";
 	public static ActivityFightBinding binding;
 	public static Match match;
+	private Commons commons;
 	public static int score;
 
 	/**
@@ -66,9 +69,32 @@ public class FightActivity extends AppCompatActivity
 
 		extractDataFromIntent();
 		handleSharedPreferences();
+		setWebViewSettings();
 		initializeFirebaseDirectory();
 		setMatchScore();
 		setListeners();
+	}
+
+	private void setWebViewSettings ()
+	{
+		final WebSettings webSettings = binding.webView.getSettings();
+		webSettings.setAppCachePath(getApplicationContext().getCacheDir().getAbsolutePath());
+		webSettings.setAppCacheEnabled(false);
+		webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE); // there are transfer problems when using cached resources
+		webSettings.setUseWideViewPort(true);
+		webSettings.setLoadWithOverviewMode(true);
+		webSettings.setDatabaseEnabled(true);
+		webSettings.setDomStorageEnabled(true);
+		webSettings.setAllowContentAccess(true);
+		webSettings.setAllowFileAccess(true);
+		webSettings.setSupportMultipleWindows(true);
+		webSettings.setUserAgentString("Mozilla/5.0 (Linux; Android " + Build.VERSION.RELEASE + "; Build/HUAWEI" +  getString(R.string.app_name) + ") Version/1.10" + (isTablet(this) ? " Tablet " : " Mobile ") + "Safari/537.36");
+		binding.webView.setWebChromeClient(new WebChromeClient());
+		binding.webView.setWebViewClient(new WebViewClient());
+
+		// Allow webContentsDebugging if APK was build as debuggable
+		if (0 != (getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE))
+			WebView.setWebContentsDebuggingEnabled(true);
 	}
 
 	/**
@@ -103,6 +129,7 @@ public class FightActivity extends AppCompatActivity
 				.getPrefInt(PrefsManager.KEY_BACKGROUND, R.color.black);
 		binding.activityFight
 				.setBackgroundColor(getColor(backgroundColor));
+		commons = new Commons(this);
 	}
 
 	/**
@@ -128,12 +155,14 @@ public class FightActivity extends AppCompatActivity
 	private void initializeFirebaseDirectory ()
 	{
 		// hitRef = FirebaseManager.getDataRef("processor/isHit"); // hitRef is the firebase directory for knowing if the robot got hit
-		DatabaseReference myRef1 = FirebaseManager.getDataRef("processor/controller"); // myRef1 is the firebase directory for the controller
-		myRef2 = myRef1.child("leftStick/angle"); // myRef2 is the firebase directory for the left stick angle
-		myRef3 = myRef1.child("leftStick/strength"); // myRef3 is the firebase directory for the left stick strength
-		myRef4 = myRef1.child("rightStick/x"); // myRef4 is the firebase directory for the right stick x
-		myRef5 = myRef1.child("rightStick/y"); // myRef5 is the firebase directory for the right stick y
-		myRef6 = FirebaseManager.getDataRef("processor/laserEmitter"); // myRef6 is the firebase directory for the laser emitter
+		DatabaseReference myRef1 = FirebaseManager.getDataRef("processor/"); // myRef1 is the firebase directory for the controller
+		myRef2 = myRef1.child("controller/leftStick/angle"); // myRef2 is the firebase directory for the left stick angle
+		myRef3 = myRef1.child("controller/leftStick/strength"); // myRef3 is the firebase directory for the left stick strength
+		myRef4 = myRef1.child("controller/rightStick/x"); // myRef4 is the firebase directory for the right stick x
+		myRef5 = myRef1.child("controller/rightStick/y"); // myRef5 is the firebase directory for the right stick y
+		myRef6 = myRef1.child("laserEmitter"); // myRef6 is the firebase directory for the laser emitter
+		myRef7 = myRef1.child("cam/ip"); // myRef7 is the firebase directory for the camera ip
+		myRef8 = myRef1.child("cam/trackMode"); // myRef8 is the firebase directory for the camera track mode
 	}
 
 	/**
@@ -170,18 +199,19 @@ public class FightActivity extends AppCompatActivity
 	@SuppressLint("ClickableViewAccessibility")
 	private void setListeners ()
 	{
-/*
-		hitRef.addValueEventListener(new ValueEventListener()
+		myRef7.addListenerForSingleValueEvent(new ValueEventListener()
 		{
 			@Override
 			public void onDataChange (@NonNull DataSnapshot snapshot)
-			{ handleHitEvent(snapshot); }
+			{
+				String camIp = snapshot.getValue(String.class);
+				binding.webView.loadUrl("http://" + camIp + "/index.html");
+			}
 
 			@Override
 			public void onCancelled (@NonNull DatabaseError error)
-			{ Log.d(TAG, "onCancelled:     " + error.getMessage()); }
+			{ Log.d(TAG, "onCancelled: " + error.getMessage()); }
 		});
-*/
 		binding.shootButton.setOnTouchListener((v, event) ->
 				sendToFirebaseWhilePressed(event));
 		binding.joystickLeft.setOnMoveListener((angle, strength) ->
@@ -196,49 +226,36 @@ public class FightActivity extends AppCompatActivity
 			myRef4.setValue((int) x);
 			myRef5.setValue((int) y);
 		});
-		final WebSettings webSettings = binding.webView.getSettings();
-		webSettings.setAppCachePath(getApplicationContext().getCacheDir().getAbsolutePath());
-		webSettings.setAppCacheEnabled(false);
-		webSettings.setCacheMode(WebSettings.LOAD_NO_CACHE); // there are transfer problems when using cached resources
-		webSettings.setUseWideViewPort(true);
-		webSettings.setLoadWithOverviewMode(true);
-		webSettings.setDatabaseEnabled(true);
-		webSettings.setDomStorageEnabled(true);
-		webSettings.setAllowContentAccess(true);
-		webSettings.setAllowFileAccess(true);
-		webSettings.setSupportMultipleWindows(true);
-		webSettings.setUserAgentString("Mozilla/5.0 (Linux; Android " + Build.VERSION.RELEASE + "; Build/HUAWEI" +  getString(R.string.app_name) + ") Version/1.10" + (isTablet(this) ? " Tablet " : " Mobile ") + "Safari/537.36");
-		binding.webView.setWebChromeClient(new WebChromeClient());
-		binding.webView.setWebViewClient(new WebViewClient());
-
-		// Allow webContentsDebugging if APK was build as debuggable
-		if (0 != (getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE))
-			WebView.setWebContentsDebuggingEnabled(true);
-		binding.webView.loadUrl("http://10.100.102.51:8000/index.html");
-	}
-
-/*
-	public void handleHitEvent (Context context, @NonNull DataSnapshot snapshot)
-	{
-		score += snapshot.getValue(Boolean.class) ? 1 : 0;
-		if (score == Integer.parseInt(match.getRoundsCap()))
+		binding.switchFightMode.setOnClickListener(v ->
 		{
-			notifyLostMessage(context);
-		}
-		matchScore.setText(score + " / " + match.getRoundsCap());
+			hadleModeSwitching();
+		});
+
 	}
-	private void notifyLostMessage (Context context)
+
+	private void hadleModeSwitching ()
 	{
-		MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(context);
-		builder.setTitle(R.string.you_lost)
-				.setMessage(R.string.lose_messege)
-				.setNegativeButton(R.string.ok, (dialogInterface, i) ->
-						Commons.activityLauncher(this, new Intent(context, MainActivity.class)))
-				.setCancelable(false)
-				.show();
-		NotificationHelper.createNotification("You lost\nYou lost the match", context);
+		if (binding.switchFightMode.isChecked())
+		{
+			myRef8.setValue(1); // start tracking
+			binding.joystickLeft.setVisibility(View.GONE);
+			binding.joystickRight.setVisibility(View.GONE);
+			binding.shootButton.setVisibility(View.GONE);
+			commons.makeSnackbar(binding.getRoot(), "Tracking mode activated").show();
+		}
+		else
+		{
+			myRef8.setValue(0); // stop tracking
+			myRef2.setValue(0); // set left stick to 0
+			myRef3.setValue(0); // set left stick strength to 0
+			myRef4.setValue(90);
+			myRef5.setValue(90);
+			binding.joystickLeft.setVisibility(View.VISIBLE);
+			binding.joystickRight.setVisibility(View.VISIBLE);
+			binding.shootButton.setVisibility(View.VISIBLE);
+			commons.makeSnackbar(binding.getRoot(), "Tracking mode deactivated").show();
+		}
 	}
-*/
 
 	/**
 	 * Sends the fire-signal to the firebase database.

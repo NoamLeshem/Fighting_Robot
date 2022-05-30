@@ -92,4 +92,5 @@
     <string name="logout_confirm">are you sure you want to logout?</string>
     <string name="yes">yes</string>
     <string name="primary_color">Primary Color</string>
+    <string name="automatic_mode">Automatic Mode</string>
 </resources>
